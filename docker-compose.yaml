@@ -1,0 +1,28 @@
+services:
+  app:    
+    container_name: Flick
+    build: .
+    working_dir: /app
+    volumes: 
+      - .:/app
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/flick
+      - JWT_SECRET=R4!w8@eYqP1^D3kZxL9#MvJcT0&BhUoF7GmNpQv2VzXsAbE
+      - IPINFO_TOKEN=0d343e3cb42de5
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+
+  mongodb:
+    container_name: Flick_Database
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:

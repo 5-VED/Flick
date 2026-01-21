@@ -1,0 +1,14 @@
+module.exports.BaseFieldsModel = require('./BaseFields.model');
+module.exports.UserModel = require('./User.model');
+module.exports.UserAgentModel = require('./UserAgent.model');
+module.exports.RoleModel = require('./Role.model');
+module.exports.SessionModel = require('./Session.model');
+module.exports.ConversationModel = require('./Conversation.model');
+module.exports.MessageModel = require('./Message.model');
+module.exports.NotificationModel = require('./Notification.model');
+module.exports.ParticipantsModel = require('./Participants.model');
+module.exports.AttachmentsModel = require('./Attachments.model');
+module.exports.RidesModel = require('./Rides.model');
+module.exports.AddressModel = require('./Address.model');
+module.exports.RiderModel = require('./Rider.model');
+module.exports.FilterModel = require('./Filter.model');
