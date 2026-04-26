@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./Config/swagger');
 const multer = require('multer');
@@ -21,6 +22,9 @@ app.use(userAgentMiddleware);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve uploaded files publicly
+app.use('/uploads', express.static(path.join(__dirname, '../Uploads')));
 
 // Swagger Documentation
 app.use('/api-docs', swaggerUi.serve);

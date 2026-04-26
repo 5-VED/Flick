@@ -8,10 +8,6 @@ const messageSchema = new Schema(
       ref: 'Conversation',
       required: true,
     },
-    is_favourite: {
-      type: Schema.Types.Boolean,
-      default: false,
-    },
     sender: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -28,7 +24,32 @@ const messageSchema = new Schema(
         ref: 'Attachment',
       },
     ],
+    // Quoted / reply-to message
+    reply_to: {
+      type: Schema.Types.ObjectId,
+      ref: 'Message',
+      default: null,
+    },
+    // Emoji reactions: [{ user_id, emoji }]
+    reactions: [
+      {
+        user_id: { type: Schema.Types.ObjectId, ref: 'User' },
+        emoji: { type: Schema.Types.String, trim: true },
+        _id: false,
+      },
+    ],
+    // Users who deleted this message for themselves only
+    is_deleted_for: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
     is_edited: {
+      type: Schema.Types.Boolean,
+      default: false,
+    },
+    is_favourite: {
       type: Schema.Types.Boolean,
       default: false,
     },

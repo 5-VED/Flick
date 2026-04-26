@@ -1,7 +1,6 @@
-const { ConversationModel } = require('../Models');
+const { ConversationModel, ParticipantsModel } = require('../Models');
 const messages = require('../Constants/messages');
 const { HTTP_CODES } = require('../Constants/enums');
-const { MESSAGE_FILTER } = require('../Constants/enums');
 
 module.exports = {
   addConversation: async (req, res) => {
@@ -138,13 +137,7 @@ module.exports = {
         });
       }
 
-      const conversation = await ConversationModel.findOne(
-        {
-          name,
-          is_deleted: false,
-        },
-        null
-      );
+      const conversation = await ConversationModel.findOne({ name, is_deleted: false });
 
       if (!conversation) {
         return res.status(HTTP_CODES.NOT_FOUND).json({
@@ -153,9 +146,8 @@ module.exports = {
         });
       }
 
-      // Soft delete the conversation
-      await ConversationModel.findOneAndUpdate(
-        name,
+      await ConversationModel.findByIdAndUpdate(
+        conversation._id,
         { $set: { is_deleted: true, is_active: false } },
         { new: true }
       );
@@ -166,7 +158,6 @@ module.exports = {
       });
     } catch (error) {
       console.error('Error in deleteConversation:', error);
-
       return res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: messages.CONVERSATION_DELETE_ERROR,
@@ -175,130 +166,64 @@ module.exports = {
     }
   },
 
-  // Fetch all converstions
   getConversations: async (req, res) => {
     try {
-      const { page = 1, limit = 10 } = req.query;
+      const { page = 1, limit = 20 } = req.query;
 
-      // const search = filter.search || '';
-      // if (search) {
-      //   filter.name = { $regex: search, $options: 'i' };
-      // }
-
-      // if (filter.is_group_chat) {
-      //   filter.is_group_chat = { $eq: Boolean(filter.is_group_chat) };
-      // }
+      // Scope to current user's conversations
+      const userParticipants = await ParticipantsModel.find({
+        user_id: req.user._id,
+      }).select('_id');
+      const userParticipantIds = userParticipants.map(p => p._id);
 
       const pipeline = [
-        // {
-        //   $match: {
-        //     ...filter,
-        //   }, 
-        // },
         {
-          $sort: { createdAt: -1 },
+          $match: {
+            participants: { $in: userParticipantIds },
+            is_deleted: false,
+            is_active: true,
+          },
         },
-        {
-          $skip: (parseInt(page) - 1) * parseInt(limit),
-        },
-        {
-          $limit: parseInt(limit),
-        },
+        { $sort: { 'last_message.sent_at': -1 } },
+        { $skip: (parseInt(page) - 1) * parseInt(limit) },
+        { $limit: parseInt(limit) },
         {
           $lookup: {
-            from: 'Message_Master',
-            let: { conversationId: '$_id' },
-            pipeline: [
-              {
-                $match: {
-                  $expr: { $eq: ['$conversation_id', '$$conversationId'] },
-                },
-              },
-              {
-                $sort: { createdAt: -1 },
-              },
-              {
-                $limit: 1,
-              },
-              {
-                $project: {
-                  _id: 1,
-                  message: 1,
-                  sender_id: 1,
-                  createdAt: 1,
-                  content: 1,
-                },
-              },
-            ],
-            as: 'last_message',
-          },
-        },
-        {
-          $unwind: {
-            path: '$last_message',
-            preserveNullAndEmptyArrays: true,
-          },
-        },
-        {
-          $unwind: {
-            path: '$participants',
-            preserveNullAndEmptyArrays: true,
-          },
-        },
-        {
-          $lookup: {
-            from: 'users',
-            localField: 'participants.user_id',
+            from: 'Participants',
+            localField: 'participants',
             foreignField: '_id',
             pipeline: [
               {
-                $project: {
-                  _id: 1,
-                  email: 1,
-                  address: 1,
-                  is_deleted: 1,
-                  is_active: 1,
+                $lookup: {
+                  from: 'User_Master',
+                  localField: 'user_id',
+                  foreignField: '_id',
+                  pipeline: [
+                    {
+                      $project: {
+                        _id: 1,
+                        first_name: 1,
+                        last_name: 1,
+                        profile_pic: 1,
+                        status: 1,
+                        email: 1,
+                      },
+                    },
+                  ],
+                  as: 'user',
                 },
               },
+              { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
+              { $project: { _id: 1, user_id: 1, user: 1, is_admin: 1 } },
             ],
-            as: 'participant_user',
-          },
-        },
-        {
-          $unwind: {
-            path: '$participant_user',
-            preserveNullAndEmptyArrays: true,
-          },
-        },
-        {
-          $addFields: {
-            'participants.user': '$participant_user',
-          },
-        },
-        {
-          $project: {
-            participant_user: 0,
-          },
-        },
-        {
-          $group: {
-            _id: '$_id',
-            name: { $first: '$name' },
-            is_group_chat: { $first: '$is_group_chat' },
-            created_by: { $first: '$created_by' },
-            total_unread_messages: { $first: '$total_unread_messages' },
-            last_message: { $first: '$last_message' },
-            is_deleted: { $first: '$is_deleted' },
-            is_active: { $first: '$is_active' },
-            createdAt: { $first: '$createdAt' },
-            updatedAt: { $first: '$updatedAt' },
-            participants: { $push: '$participants' },
+            as: 'participants',
           },
         },
       ];
 
       const conversations = await ConversationModel.aggregate(pipeline);
       const count = await ConversationModel.countDocuments({
+        participants: { $in: userParticipantIds },
         is_deleted: false,
         is_active: true,
       });
@@ -306,10 +231,7 @@ module.exports = {
       return res.status(HTTP_CODES.OK).json({
         success: true,
         message: messages.CONVERSATION_RETRIEVED_SUCCESS,
-        data: {
-          conversations,
-          count,
-        },
+        data: { conversations, count },
       });
     } catch (error) {
       console.error('Error in getConversations:', error);

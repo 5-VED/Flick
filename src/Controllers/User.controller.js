@@ -4,6 +4,7 @@ const { JWT_SECRET } = require('../Config/config');
 const jwt = require('jsonwebtoken');
 const messages = require('../Constants/messages');
 const { HTTP_CODES } = require('../Constants/enums');
+const { escapeRegExp } = require('../Utils/string.utils');
 
 module.exports = {
   signup: async (req, res) => {
@@ -69,9 +70,9 @@ module.exports = {
 
   addAttachments: async (req, res) => {
     try {
-      const attachments = req.files;
+      const files = req.files;
 
-      if (!attachments || !Array.isArray(attachments)) {
+      if (!files || !Array.isArray(files) || files.length === 0) {
         return res.status(HTTP_CODES.BAD_REQUEST).json({
           success: false,
           message: messages.EXTENSION_NOT_FOUND,
@@ -79,20 +80,28 @@ module.exports = {
         });
       }
 
-      attachments.forEach(async element => {
-        let payload = {};
-        payload['file_name'] = element?.originalname;
-        payload['file_type'] = element?.mimetype;
-        payload['file_size'] = Number(element?.size) / 1024 + ' Kb';
-        payload['file_url'] = element?.path;
-        payload['uploaded_at'] = element?.uploaded_at;
-        await AttachmentsModel.create(payload);
-      });
+      const results = await Promise.all(
+        files.map(file =>
+          AttachmentsModel.create({
+            file_name: file.originalname,
+            file_type: file.mimetype,
+            file_size: `${(Number(file.size) / 1024).toFixed(2)} KB`,
+            file_url: `/uploads/${file.filename}`,
+            uploaded_at: new Date(),
+          })
+        )
+      );
 
       return res.status(HTTP_CODES.OK).json({
         success: true,
         message: messages.ATTACHMENTS_ADDED_SUCCESS,
-        data: {},
+        data: results.map(r => ({
+          _id: r._id,
+          file_name: r.file_name,
+          file_type: r.file_type,
+          file_size: r.file_size,
+          file_url: r.file_url,
+        })),
       });
     } catch (error) {
       return res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).json({
@@ -123,6 +132,44 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      return res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: messages.INTERNAL_SERVER_ERROR,
+        error,
+      });
+    }
+  },
+
+  getUsers: async (req, res) => {
+    try {
+      const { search = '', page = 1, limit = 20 } = req.query;
+
+      const criteria = {
+        is_deleted: false,
+        is_active: true,
+        _id: { $ne: req.user._id },
+      };
+
+      if (search) {
+        const s = escapeRegExp(search);
+        criteria.$or = [
+          { first_name: { $regex: s, $options: 'i' } },
+          { last_name: { $regex: s, $options: 'i' } },
+          { email: { $regex: s, $options: 'i' } },
+        ];
+      }
+
+      const users = await UserModel.find(criteria)
+        .select('_id first_name last_name email profile_pic status')
+        .skip((parseInt(page) - 1) * parseInt(limit))
+        .limit(parseInt(limit));
+
+      return res.status(HTTP_CODES.OK).json({
+        success: true,
+        message: 'Users fetched successfully',
+        data: users,
+      });
+    } catch (error) {
       return res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: messages.INTERNAL_SERVER_ERROR,

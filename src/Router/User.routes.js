@@ -46,4 +46,10 @@ router.patch(
   UserController.disableUser
 );
 
+router.get(
+  '/list',
+  auth({ isTokenRequired: true, usersAllowed: [ROLE.USER, ROLE.ADMIN] }),
+  UserController.getUsers
+);
+
 module.exports = router;
