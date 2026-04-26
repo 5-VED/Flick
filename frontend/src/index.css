@@ -3,11 +3,202 @@
 @tailwind utilities;
 
 @layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+  }
+
+  html {
+    height: 100%;
+  }
+
   body {
-    @apply antialiased text-gray-900 bg-gray-50 h-screen overflow-hidden;
+    @apply antialiased bg-[#1A1A1A] text-white;
+    font-family: 'DM Sans', sans-serif;
+    height: 100dvh;
+    overflow: hidden;
   }
 
   #root {
-    @apply h-full;
+    height: 100dvh;
+    overflow: hidden;
   }
+
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+  }
+}
+
+@layer components {
+  .app-shell {
+    @apply relative w-full bg-[#1A1A1A];
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .screen {
+    @apply absolute inset-0 bg-[#1A1A1A] flex flex-col;
+    animation: screenEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .btn-primary {
+    @apply w-full flex items-center justify-center gap-2 bg-[#FFD700] text-[#1A1A1A]
+           font-bold rounded-2xl py-4 px-6 text-[15px] tracking-wide
+           active:scale-95 transition-transform duration-150 select-none;
+    font-family: 'DM Sans', sans-serif;
+    box-shadow: 0 4px 28px rgba(255, 215, 0, 0.4);
+  }
+
+  .btn-primary:disabled {
+    @apply opacity-50 cursor-not-allowed;
+    box-shadow: none;
+  }
+
+  .btn-secondary {
+    @apply w-full flex items-center justify-center gap-2 border border-[#3A3A3A] text-white
+           rounded-2xl py-4 px-6 text-[15px] font-medium
+           active:scale-95 transition-transform duration-150 select-none;
+  }
+
+  .btn-ghost {
+    @apply flex items-center justify-center gap-2 text-[#888]
+           py-3 px-4 text-sm font-medium
+           active:opacity-60 transition-opacity duration-150 select-none;
+  }
+
+  .card {
+    @apply bg-[#222] rounded-2xl p-4;
+  }
+
+  .card-bordered {
+    @apply bg-[#222] border border-[#333] rounded-2xl p-4;
+  }
+
+  .input-field {
+    @apply w-full bg-[#2A2A2A] border border-[#3A3A3A] text-white rounded-xl px-4 py-3.5 text-base
+           focus:outline-none focus:border-[#FFD700] transition-colors duration-200 placeholder-[#555];
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .bottom-sheet {
+    background: #1C1C1C;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.6);
+  }
+
+  .pill-badge {
+    @apply inline-flex items-center gap-1 bg-[#FFD700] text-[#1A1A1A] text-xs font-bold
+           px-2.5 py-1 rounded-full;
+  }
+
+  .section-title {
+    @apply text-xs font-semibold tracking-[0.12em] uppercase text-[#888];
+  }
+
+  .divider {
+    @apply border-t border-[#2D2D2D] my-4;
+  }
+
+  .map-bg {
+    background: #1B2617;
+  }
+}
+
+@keyframes screenEnter {
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulseRingAnim {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+@keyframes drawRoute {
+  from {
+    stroke-dashoffset: 600;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes bikePulse {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes radarWave {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+@keyframes captainApproach {
+  0% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-8px, -12px);
+  }
+  40% {
+    transform: translate(-15px, -22px);
+  }
+  60% {
+    transform: translate(-20px, -30px);
+  }
+  80% {
+    transform: translate(-24px, -38px);
+  }
+  100% {
+    transform: translate(-26px, -44px);
+  }
+}
+
+.route-path {
+  stroke-dasharray: 600;
+  animation: drawRoute 1.6s ease-out forwards;
+}
+
+.location-ring {
+  animation: pulseRingAnim 1.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+.radar-wave {
+  animation: radarWave 2s ease-out infinite;
+}
+
+.captain-icon {
+  animation: captainApproach 12s ease-in-out infinite alternate;
+}
+
+.bike-float {
+  animation: bikePulse 2s ease-in-out infinite;
 }
