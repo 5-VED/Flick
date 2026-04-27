@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #0D0D0D;
+  font-family: 'DM Sans', sans-serif;
+  color: #F9FAFB;
+  -webkit-font-smoothing: antialiased;
+  min-width: 960px;
+}
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+.screen-enter {
+  animation: fade-in 0.2s ease-out;
+}
