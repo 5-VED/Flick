@@ -11,6 +11,14 @@ const tabs = [
     ),
   },
   {
+    id: 'chat', label: 'Chat',
+    icon: (active) => (
+      <svg viewBox="0 0 24 24" fill={active ? '#FFD700' : 'none'} stroke={active ? '#FFD700' : '#9CA3AF'} strokeWidth="2" className="w-5 h-5">
+        <path d="M21 15c0 .53-.21 1.04-.59 1.41-.37.37-.88.59-1.41.59H7l-4 4V5c0-.53.21-1.04.59-1.41C3.96 3.21 4.47 3 5 3h14c.53 0 1.04.21 1.41.59.38.37.59.88.59 1.41v10z" />
+      </svg>
+    ),
+  },
+  {
     id: 'earnings', label: 'Earnings',
     icon: (active) => (
       <svg viewBox="0 0 24 24" fill="none" stroke={active ? '#FFD700' : '#9CA3AF'} strokeWidth="2" className="w-5 h-5">

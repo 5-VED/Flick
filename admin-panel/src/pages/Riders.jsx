@@ -3,7 +3,7 @@ import { Search, Eye, Ban, Trash2, CheckCircle, ShieldCheck, ShieldX } from 'luc
 import DataTable from '../components/DataTable';
 import StatusBadge from '../components/StatusBadge';
 import Modal from '../components/Modal';
-import { riders } from '../data/mockData';
+import { useAdmin } from '../context/AdminContext';
 
 function fmt(date) {
   return new Date(date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -12,30 +12,52 @@ function fmt(date) {
 const VEHICLE_ICON = { Bike: '🏍️', Auto: '🛺', Cab: '🚖' };
 
 export default function Riders() {
+  const { riders: rawRiders, verifyRider, updateCustomerStatus } = useAdmin();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [vehicleFilter, setVehicleFilter] = useState('All');
   const [selected, setSelected] = useState(null);
-  const [data, setData] = useState(riders);
+
+  // Normalize both API and mock data
+  const data = useMemo(() => rawRiders.map(r => ({
+    id: r._id || r.id,
+    name: r.name || (r.user_id ? `${r.user_id.first_name || ''} ${r.user_id.last_name || ''}`.trim() : 'Unknown'),
+    phone: r.phone || r.user_id?.phone || '—',
+    city: r.city || r.user_id?.city || '—',
+    vehicle: r.vehicle || r.vehicle_category || r.vehicle_details?.category || 'Bike',
+    rating: r.rating || 0,
+    totalRides: r.totalRides || r.total_rides || 0,
+    earnings: r.earnings || 0,
+    status: r.status || (r.on_duty ? 'Online' : 'Offline'),
+    joined: r.joined || r.createdAt || r.user_id?.createdAt || new Date().toISOString(),
+    docVerified: r.docVerified ?? r.doc_verified ?? false,
+    vehicleNo: r.vehicleNo || r.vehicle_details?.vehicle_no || '—',
+  })), [rawRiders]);
 
   const filtered = useMemo(() => data.filter(r => {
     const q = search.toLowerCase();
     return (
-      (r.name.toLowerCase().includes(q) || r.phone.includes(q)) &&
+      ((r.name || '').toLowerCase().includes(q) || (r.phone || '').includes(q)) &&
       (statusFilter === 'All' || r.status === statusFilter) &&
       (vehicleFilter === 'All' || r.vehicle === vehicleFilter)
     );
   }), [data, search, statusFilter, vehicleFilter]);
 
   function toggleBlock(r) {
-    setData(prev => prev.map(x => x.id === r.id ? { ...x, status: x.status === 'Blocked' ? 'Offline' : 'Blocked' } : x));
-    if (selected?.id === r.id) setSelected(s => ({ ...s, status: s.status === 'Blocked' ? 'Offline' : 'Blocked' }));
+    const isBlocked = r.status === 'Blocked';
+    updateCustomerStatus(r.id, isBlocked);
+    if (selected?.id === r.id) setSelected(s => ({ ...s, status: isBlocked ? 'Offline' : 'Blocked' }));
   }
 
   function deleteRider(r) {
-    if (!window.confirm(`Delete ${r.name}?`)) return;
-    setData(prev => prev.filter(x => x.id !== r.id));
+    if (!window.confirm(`Block ${r.name}? This will disable their account.`)) return;
+    updateCustomerStatus(r.id, false);
     if (selected?.id === r.id) setSelected(null);
+  }
+
+  function handleVerify(r, verified) {
+    verifyRider(r.id, verified);
+    if (selected?.id === r.id) setSelected(s => ({ ...s, docVerified: verified }));
   }
 
   const columns = [

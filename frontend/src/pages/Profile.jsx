@@ -38,13 +38,13 @@ const MenuItem = ({ icon, label, value, danger, onClick, rightEl }) => (
 const Divider = () => <div className="border-t border-[#222] my-1" />;
 
 export default function Profile() {
-  const { user, walletBalance, navigate, MOCK_RIDE_HISTORY } = useApp();
+  const { user, walletBalance, navigate, logout, rideHistory } = useApp();
   const [copied, setCopied] = useState(false);
-  const REFERRAL_CODE = 'FLICK-ARJUN50';
+  const REFERRAL_CODE = user ? `FLICK-${(user.name || 'USER').split(' ')[0].toUpperCase()}50` : 'FLICK-USER50';
 
-  const completedRides = MOCK_RIDE_HISTORY.filter((r) => r.status === 'completed').length;
-  const totalKm = MOCK_RIDE_HISTORY.filter((r) => r.status === 'completed')
-    .reduce((sum, r) => sum + parseFloat(r.distance), 0)
+  const completedRides = rideHistory.filter((r) => r.status === 'completed').length;
+  const totalKm = rideHistory.filter((r) => r.status === 'completed')
+    .reduce((sum, r) => sum + (parseFloat(r.distance) || 0), 0)
     .toFixed(1);
 
   const handleCopyReferral = () => {
@@ -246,7 +246,7 @@ export default function Profile() {
             icon="🚪"
             label="Log Out"
             danger
-            onClick={() => navigate('splash')}
+            onClick={logout}
           />
         </div>
       </div>

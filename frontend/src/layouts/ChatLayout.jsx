@@ -3,10 +3,14 @@ import Sidebar from '../components/Sidebar';
 import ChatWindow from '../components/ChatWindow';
 import InfoPanel from '../components/InfoPanel';
 import { connectSocket } from '../services/socket';
+import { useApp } from '../context/AppContext';
+import api from '../services/api';
 
 const ChatLayout = () => {
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [showInfo, setShowInfo] = useState(false);
+  const [view, setView] = useState('list'); // 'list' | 'chat'
+  const { pendingChatUser, setPendingChatUser } = useApp();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -19,49 +23,81 @@ const ChatLayout = () => {
     }
   }, []);
 
-  const handleConversationCreated = updatedConv => {
-    setSelectedConversation(updatedConv);
-  };
+  // Auto-open a conversation when pendingChatUser is set (e.g. from LiveTracking "Message" button)
+  useEffect(() => {
+    if (!pendingChatUser?._id) return;
+
+    api.get('/conversation/direct', { params: { target_user_id: pendingChatUser._id } })
+      .then(res => {
+        if (res.data.success) {
+          setSelectedConversation(res.data.data);
+          setView('chat');
+        }
+      })
+      .catch(console.error)
+      .finally(() => setPendingChatUser(null));
+  }, [pendingChatUser]);
 
   const handleSelectConversation = conv => {
     setSelectedConversation(conv);
     setShowInfo(false);
+    setView('chat');
   };
 
+  const handleConversationCreated = updatedConv => {
+    setSelectedConversation(updatedConv);
+  };
+
+  const handleBack = () => {
+    setView('list');
+    setShowInfo(false);
+  };
+
+  // 64px bottom padding to clear the BottomNav overlay
+  const BOTTOM_NAV_H = 64;
+
   return (
-    <div className="flex h-screen bg-white overflow-hidden">
-      {/* Sidebar */}
-      <div className="w-[360px] min-w-[280px] border-r border-gray-200 flex-shrink-0">
-        <Sidebar
-          selectedConversation={selectedConversation}
-          onSelectConversation={handleSelectConversation}
-        />
-      </div>
-
-      {/* Chat area */}
-      <div className="flex-1 min-w-0 flex flex-col relative">
-        {selectedConversation ? (
-          <ChatWindow
-            conversation={selectedConversation}
-            onConversationCreated={handleConversationCreated}
-            onInfoOpen={() => setShowInfo(v => !v)}
+    <div className="flex flex-col bg-white overflow-hidden" style={{ height: '100%' }}>
+      {view === 'list' ? (
+        <div className="flex flex-col overflow-hidden" style={{ height: '100%', paddingBottom: BOTTOM_NAV_H }}>
+          <Sidebar
+            selectedConversation={selectedConversation}
+            onSelectConversation={handleSelectConversation}
           />
-        ) : (
-          <div className="flex flex-col items-center justify-center h-full text-gray-400 select-none bg-gray-50">
-            <div className="text-7xl mb-4">💬</div>
-            <p className="text-xl font-semibold text-gray-500">Flick Messenger</p>
-            <p className="text-sm text-gray-400 mt-2">Select a chat to start messaging</p>
-            <p className="text-xs text-gray-300 mt-1">or click + to start a new conversation</p>
-          </div>
-        )}
-      </div>
-
-      {/* Info panel */}
-      {showInfo && selectedConversation && (
-        <InfoPanel
-          conversation={selectedConversation}
-          onClose={() => setShowInfo(false)}
-        />
+        </div>
+      ) : (
+        <div className="flex flex-col relative" style={{ height: '100%', paddingBottom: BOTTOM_NAV_H }}>
+          {selectedConversation ? (
+            <>
+              <ChatWindow
+                conversation={selectedConversation}
+                onConversationCreated={handleConversationCreated}
+                onInfoOpen={() => setShowInfo(v => !v)}
+                onBack={handleBack}
+              />
+              {showInfo && (
+                <div className="absolute inset-0 z-20 bg-white">
+                  <InfoPanel
+                    conversation={selectedConversation}
+                    onClose={() => setShowInfo(false)}
+                  />
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-gray-400 bg-gray-50">
+              <div className="text-6xl mb-3">💬</div>
+              <p className="text-base font-semibold text-gray-500">Flick Messenger</p>
+              <p className="text-sm text-gray-400 mt-1">Select a chat to start messaging</p>
+              <button
+                onClick={handleBack}
+                className="mt-4 text-sm text-primary underline"
+              >
+                Back to chats
+              </button>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

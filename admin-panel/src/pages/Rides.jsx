@@ -3,7 +3,7 @@ import { Search, Eye, Flag } from 'lucide-react';
 import DataTable from '../components/DataTable';
 import StatusBadge from '../components/StatusBadge';
 import Modal from '../components/Modal';
-import { rides } from '../data/mockData';
+import { useAdmin } from '../context/AdminContext';
 
 function fmt(dt) {
   return new Date(dt).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
@@ -17,19 +17,37 @@ const TIMELINE = [
 ];
 
 export default function Rides() {
+  const { rides: rawRides } = useAdmin();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [vehicleFilter, setVehicleFilter] = useState('All');
   const [selected, setSelected] = useState(null);
 
+  const rides = useMemo(() => rawRides.map(r => ({
+    id: r._id || r.id,
+    customer: r.customer || (r.boked_by ? `${r.boked_by.first_name || ''} ${r.boked_by.last_name || ''}`.trim() : 'Unknown'),
+    rider: r.rider || (r.captain ? `${r.captain.first_name || ''} ${r.captain.last_name || ''}`.trim() : 'Unassigned'),
+    pickup: r.pickup || r.pickup_location || '—',
+    drop: r.drop || r.drop_location || '—',
+    fare: r.fare || 0,
+    status: r.status || 'Requested',
+    vehicle: r.vehicle || r.vehicle_type || 'Bike',
+    date: r.date || r.createdAt || new Date().toISOString(),
+    duration: r.duration || r.trip_duration || '—',
+    distance: r.distance || r.trip_distance || '—',
+    platformFee: r.platformFee || Math.round((r.fare || 0) * 0.1),
+    riderEarning: r.riderEarning || Math.round((r.fare || 0) * 0.9),
+  })), [rawRides]);
+
   const filtered = useMemo(() => rides.filter(r => {
     const q = search.toLowerCase();
+    const idStr = String(r.id || '');
     return (
-      (r.id.toLowerCase().includes(q) || r.customer.toLowerCase().includes(q) || r.rider.toLowerCase().includes(q)) &&
+      (idStr.toLowerCase().includes(q) || (r.customer || '').toLowerCase().includes(q) || (r.rider || '').toLowerCase().includes(q)) &&
       (statusFilter === 'All' || r.status === statusFilter) &&
       (vehicleFilter === 'All' || r.vehicle === vehicleFilter)
     );
-  }), [search, statusFilter, vehicleFilter]);
+  }), [rides, search, statusFilter, vehicleFilter]);
 
   const columns = [
     { key: 'id', label: 'Ride ID', render: v => <span className="font-mono text-xs text-[#FFD700]">{v}</span> },

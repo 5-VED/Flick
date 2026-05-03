@@ -6,7 +6,7 @@ import MessageBubble from './MessageBubble';
 import EmojiPicker from './EmojiPicker';
 import {
   Send, Paperclip, Smile, X, Search, Info,
-  ChevronDown, Reply as ReplyIcon
+  ChevronDown, Reply as ReplyIcon, ArrowLeft
 } from 'lucide-react';
 
 const normalizeMsg = msg => ({
@@ -15,7 +15,7 @@ const normalizeMsg = msg => ({
   _time: msg.createdAt || msg.created_at,
 });
 
-const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen }) => {
+const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack }) => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
@@ -395,6 +395,16 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen }) => {
     <div className="flex flex-col h-full relative">
       {/* ── Header ──────────────────────────────────────────────────── */}
       <div className="h-14 border-b border-gray-200 bg-white flex items-center px-4 shadow-sm z-10 gap-3">
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="p-1.5 -ml-1 rounded-full hover:bg-gray-100 text-gray-500 transition-colors flex-shrink-0"
+            title="Back"
+          >
+            <ArrowLeft size={20} />
+          </button>
+        )}
+
         <div className="relative flex-shrink-0">
           <div className="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
             {displayName.charAt(0).toUpperCase()}

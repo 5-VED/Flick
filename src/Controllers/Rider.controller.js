@@ -1,4 +1,4 @@
-const { UserModel, RidesModel, RiderModel } = require('../Models');
+const { UserModel, RiderModel } = require('../Models');
 const messages = require('../Constants/messages');
 const { HTTP_CODES } = require('../Constants/enums');
 const logger = require('../Utils/logger.utils');
@@ -16,13 +16,11 @@ module.exports = {
 
       const vehicle_photo = vehicle_photos.map(photo => photo.path);
 
-      // Extract required fields with validation
       const { vehicle_details, bank_details, driving_liscence_no, adhaar_card_no, pan_card_no } =
         req.body;
       const adhaar_card_photo = req.files?.adhaar_card_photo?.[0]?.path;
       const pan_card_photo = req.files?.pan_card_photo?.[0]?.path;
 
-      // Validate required files
       if (!adhaar_card_photo || !pan_card_photo) {
         return res.status(HTTP_CODES.BAD_REQUEST).json({
           success: false,
@@ -42,7 +40,6 @@ module.exports = {
         vehicle_photo,
       };
 
-      // Run all validations concurrently (including user existence check)
       const [
         userExists,
         existingRider,
@@ -59,7 +56,6 @@ module.exports = {
         RiderModel.findOne({ pan_card_no }).lean(),
       ]);
 
-      // Check if user exists
       if (!userExists) {
         return res.status(HTTP_CODES.NOT_FOUND).json({
           success: false,
@@ -67,7 +63,6 @@ module.exports = {
         });
       }
 
-      // Check for conflicts using a more efficient approach
       const conflicts = [
         { condition: existingRider, message: messages.RIDER_ALREADY_EXISTS },
         { condition: existingVehicle, message: messages.VEHICLE_ALREADY_REGISTERED },
@@ -86,9 +81,8 @@ module.exports = {
 
       const newRider = await RiderModel.create(payload);
 
-      // Populate user details in response
       const populatedRider = await RiderModel.findById(newRider._id)
-        .populate('user_id', 'name email phone_number')
+        .populate('user_id', 'first_name last_name email phone')
         .select('-__v');
 
       return res.status(HTTP_CODES.CREATED).json({
@@ -97,7 +91,7 @@ module.exports = {
         data: populatedRider,
       });
     } catch (error) {
-      logger.error('Error registering user:->', error);
+      logger.error('Error registering rider:', error);
       return res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: messages.INTERNAL_SERVER_ERROR,
@@ -108,25 +102,56 @@ module.exports = {
 
   getRiderProfile: async (req, res) => {
     try {
+      const userId = req.user._id;
+
+      const [userWithRider] = await UserModel.aggregate([
+        { $match: { _id: userId } },
+        {
+          $lookup: {
+            from: 'Rider_Master',
+            localField: '_id',
+            foreignField: 'user_id',
+            as: 'rider',
+          },
+        },
+        {
+          $unwind: {
+            path: '$rider',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            email: 1,
+            first_name: 1,
+            last_name: 1,
+            phone: 1,
+            profile_pic: 1,
+            is_authorized_rider: 1,
+            rider: 1,
+          },
+        },
+      ]);
+
       if (!userWithRider) {
         return res.status(HTTP_CODES.NOT_FOUND).json({
           success: false,
-          message: messages.RIDER_NOT_FOUND, // More specific message
-          data: userWithRider,
+          message: messages.USER_NOT_REGISTERED,
         });
       }
 
       return res.status(HTTP_CODES.OK).json({
         success: true,
         message: messages.RIDER_PROFILE_FETCHED,
-        data: {},
+        data: userWithRider,
       });
     } catch (error) {
-      console.log(error);
+      logger.error('Error fetching rider profile:', error);
       return res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: messages.INTERNAL_SERVER_ERROR,
-        error,
+        error: error.message,
       });
     }
   },

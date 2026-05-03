@@ -3,38 +3,53 @@ import { Search, Eye, Ban, Trash2, CheckCircle } from 'lucide-react';
 import DataTable from '../components/DataTable';
 import StatusBadge from '../components/StatusBadge';
 import Modal from '../components/Modal';
-import { customers } from '../data/mockData';
+import { useAdmin } from '../context/AdminContext';
 
 function fmt(date) {
   return new Date(date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 export default function Customers() {
+  const { customers: rawCustomers, updateCustomerStatus } = useAdmin();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [cityFilter, setCityFilter] = useState('All');
   const [selected, setSelected] = useState(null);
-  const [data, setData] = useState(customers);
 
-  const cities = useMemo(() => ['All', ...new Set(customers.map(c => c.city))], []);
+  // Normalize API and mock data to same shape
+  const data = useMemo(() => rawCustomers.map(c => ({
+    id: c._id || c.id,
+    name: c.name || `${c.first_name || ''} ${c.last_name || ''}`.trim(),
+    email: c.email,
+    phone: c.phone,
+    city: c.city || c.address || '—',
+    totalRides: c.totalRides || 0,
+    totalSpent: c.totalSpent || 0,
+    status: c.status || (c.is_active === false ? 'Blocked' : 'Active'),
+    joined: c.joined || c.createdAt || new Date().toISOString(),
+    wallet: c.wallet || 0,
+  })), [rawCustomers]);
+
+  const cities = useMemo(() => ['All', ...new Set(data.map(c => c.city).filter(Boolean))], [data]);
 
   const filtered = useMemo(() => data.filter(c => {
     const q = search.toLowerCase();
     return (
-      (c.name.toLowerCase().includes(q) || c.phone.includes(q) || c.email.toLowerCase().includes(q)) &&
+      ((c.name || '').toLowerCase().includes(q) || (c.phone || '').includes(q) || (c.email || '').toLowerCase().includes(q)) &&
       (statusFilter === 'All' || c.status === statusFilter) &&
       (cityFilter === 'All' || c.city === cityFilter)
     );
   }), [data, search, statusFilter, cityFilter]);
 
   function toggleBlock(c) {
-    setData(prev => prev.map(r => r.id === c.id ? { ...r, status: r.status === 'Active' ? 'Blocked' : 'Active' } : r));
-    if (selected?.id === c.id) setSelected(s => ({ ...s, status: s.status === 'Active' ? 'Blocked' : 'Active' }));
+    const newActive = c.status !== 'Active';
+    updateCustomerStatus(c.id, newActive);
+    if (selected?.id === c.id) setSelected(s => ({ ...s, status: newActive ? 'Active' : 'Blocked' }));
   }
 
   function deleteCustomer(c) {
-    if (!window.confirm(`Delete ${c.name}? This cannot be undone.`)) return;
-    setData(prev => prev.filter(r => r.id !== c.id));
+    if (!window.confirm(`Block ${c.name}? This will disable their account.`)) return;
+    updateCustomerStatus(c.id, false);
     if (selected?.id === c.id) setSelected(null);
   }
 

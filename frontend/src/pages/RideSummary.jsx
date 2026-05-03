@@ -8,7 +8,7 @@ const PAYMENT_OPTIONS = [
 ];
 
 export default function RideSummary() {
-  const { rideData, resetRide, walletBalance } = useApp();
+  const { rideData, resetRide, walletBalance, submitRating } = useApp();
   const [rating, setRating] = useState(0);
   const [hoveredStar, setHoveredStar] = useState(0);
   const [selectedPayment, setSelectedPayment] = useState('cash');
@@ -27,8 +27,11 @@ export default function RideSummary() {
 
   const tips = [0, 10, 20, 30];
 
-  const handlePay = () => {
+  const handlePay = async () => {
     setPaid(true);
+    if (rating > 0 && submitRating) {
+      await submitRating(rating, null, tipAmount, selectedPayment).catch(() => {});
+    }
     setTimeout(resetRide, 2200);
   };
 

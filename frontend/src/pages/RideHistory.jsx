@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 
 const typeConfig = {
@@ -91,16 +91,18 @@ const RideCard = ({ ride }) => {
 };
 
 export default function RideHistory() {
-  const { MOCK_RIDE_HISTORY } = useApp();
+  const { rideHistory, loadRideHistory, navigate } = useApp();
   const [filter, setFilter] = useState('all');
+
+  useEffect(() => { loadRideHistory(); }, []);
 
   const filtered =
     filter === 'all'
-      ? MOCK_RIDE_HISTORY
-      : MOCK_RIDE_HISTORY.filter((r) => r.status === filter);
+      ? rideHistory
+      : rideHistory.filter((r) => r.status === filter);
 
-  const totalSpent = MOCK_RIDE_HISTORY.filter((r) => r.status === 'completed').reduce(
-    (s, r) => s + r.fare,
+  const totalSpent = rideHistory.filter((r) => r.status === 'completed').reduce(
+    (s, r) => s + (r.fare || 0),
     0
   );
 
@@ -126,15 +128,15 @@ export default function RideHistory() {
         {/* Stats row */}
         <div className="grid grid-cols-3 gap-2 mb-4">
           {[
-            { label: 'Total Rides', val: MOCK_RIDE_HISTORY.length, icon: '🏍️' },
+            { label: 'Total Rides', val: rideHistory.length, icon: '🏍️' },
             {
               label: 'Completed',
-              val: MOCK_RIDE_HISTORY.filter((r) => r.status === 'completed').length,
+              val: rideHistory.filter((r) => r.status === 'completed').length,
               icon: '✅',
             },
             {
               label: 'Cancelled',
-              val: MOCK_RIDE_HISTORY.filter((r) => r.status === 'cancelled').length,
+              val: rideHistory.filter((r) => r.status === 'cancelled').length,
               icon: '❌',
             },
           ].map(({ label, val, icon }) => (

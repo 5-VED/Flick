@@ -12,4 +12,6 @@ router.use('/conversation', require('./Conversation.routes'));
 
 router.use('/filter', require('./Filter.routes'));
 
+router.use('/admin', require('./Admin.routes'));
+
 module.exports = router;

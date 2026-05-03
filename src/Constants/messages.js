@@ -45,6 +45,31 @@ const messages = {
 
   FILTER_CREATED: 'Filter created successfully',
 
+  RIDE_NOT_FOUND: 'Ride not found',
+  RIDE_CANCELLED_SUCCESSFULLY: 'Ride cancelled successfully',
+  RIDE_STATUS_UPDATED: 'Ride status updated successfully',
+  RIDE_RATED_SUCCESSFULLY: 'Ride rated successfully',
+  RIDE_HISTORY_FETCHED: 'Ride history fetched successfully',
+  UNAUTHORIZED_ACCESS: 'You are not authorized to perform this action',
+  VALIDATION_ERROR: 'Validation error',
+
+  OTP_SENT: 'OTP sent successfully',
+  OTP_VERIFIED: 'OTP verified successfully',
+  OTP_INVALID: 'Invalid or expired OTP',
+  OTP_RESENT: 'OTP resent successfully',
+  PHONE_NOT_FOUND: 'No account found with this phone number',
+  USER_PROFILE_FETCHED: 'Profile fetched successfully',
+  USER_PROFILE_UPDATED: 'Profile updated successfully',
+
+  ADMIN_STATS_FETCHED: 'Stats fetched successfully',
+  ADMIN_CUSTOMERS_FETCHED: 'Customers fetched successfully',
+  ADMIN_RIDERS_FETCHED: 'Riders fetched successfully',
+  ADMIN_RIDES_FETCHED: 'Rides fetched successfully',
+  ADMIN_DISPUTES_FETCHED: 'Disputes fetched successfully',
+  RIDER_VERIFIED: 'Rider documents verified successfully',
+  RIDER_BLOCKED: 'Rider blocked successfully',
+  USER_STATUS_UPDATED: 'User status updated successfully',
+
   // Chat Authentication Messages
   CHAT_AUTH_SUCCESS: 'Authentication successful',
   CHAT_AUTH_FAILED: 'Authentication failed',

@@ -11,9 +11,10 @@ import RideHistory from './pages/RideHistory';
 import Profile from './pages/Profile';
 import BottomNav from './components/BottomNav';
 import MapView from './components/MapView';
+import ChatLayout from './layouts/ChatLayout';
 import './index.css';
 
-const BOTTOM_NAV_SCREENS = new Set(['home', 'history', 'profile']);
+const BOTTOM_NAV_SCREENS = new Set(['home', 'history', 'chat', 'profile']);
 
 const MAP_SCREEN_CONFIGS = {
   home: { showBikes: true },
@@ -126,6 +127,7 @@ function AppShell() {
         {screen === 'summary'  && <RideSummary key="summary" />}
         {screen === 'history'  && <RideHistory key="history" />}
         {screen === 'profile'  && <Profile key="profile" />}
+        {screen === 'chat'     && <ChatLayout key="chat" />}
 
         {BOTTOM_NAV_SCREENS.has(screen) && <BottomNav />}
       </div>

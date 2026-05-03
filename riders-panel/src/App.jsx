@@ -6,11 +6,12 @@ import OnTrip from './pages/OnTrip'
 import TripSummary from './pages/TripSummary'
 import Earnings from './pages/Earnings'
 import Profile from './pages/Profile'
+import Chat from './pages/Chat'
 import RideRequest from './pages/RideRequest'
 import Toast from './components/Toast'
 import Sidebar from './components/Sidebar'
 
-const SIDEBAR_SCREENS = ['home', 'earnings', 'profile']
+const SIDEBAR_SCREENS = ['home', 'chat', 'earnings', 'profile']
 
 export default function App() {
   const { currentScreen, pendingRequest } = useApp()
@@ -23,6 +24,7 @@ export default function App() {
     trip_summary: <TripSummary />,
     earnings: <Earnings />,
     profile: <Profile />,
+    chat: <Chat />,
   }
 
   const hasSidebar = SIDEBAR_SCREENS.includes(currentScreen)

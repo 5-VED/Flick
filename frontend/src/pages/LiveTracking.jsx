@@ -34,7 +34,7 @@ const ActionBtn = ({ icon, label, onClick, danger }) => (
 );
 
 export default function LiveTracking() {
-  const { captain, selectedRide, completeRide, navigate } = useApp();
+  const { captain, selectedRide, completeRide, navigate, setPendingChatUser } = useApp();
   const [eta, setEta] = useState(captain?.eta || 4);
   const [status, setStatus] = useState('arriving'); // 'arriving' | 'onboard'
   const [showSOS, setShowSOS] = useState(false);
@@ -200,6 +200,10 @@ export default function LiveTracking() {
             />
             <ActionBtn
               label="Message"
+              onClick={() => {
+                if (cap?._id) setPendingChatUser({ _id: cap._id, name: cap.name });
+                navigate('chat');
+              }}
               icon={
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                   <path

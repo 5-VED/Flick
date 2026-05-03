@@ -4,6 +4,7 @@ export default {
   theme: {
     extend: {
       colors: {
+        primary: '#3B82F6',
         flick: {
           yellow: '#FFD700',
           'yellow-dark': '#E6C200',

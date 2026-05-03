@@ -76,6 +76,7 @@ export function AppProvider({ children }) {
   const [rideHistory] = useState(MOCK_RIDE_HISTORY)
   const [toast, setToast] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [pendingChatUser, setPendingChatUser] = useState(null)
 
   const navigate = useCallback((screen) => setCurrentScreen(screen), [])
 
@@ -167,8 +168,19 @@ export function AppProvider({ children }) {
   useEffect(() => {
     if (!token) return
     const socket = connectSocket(token)
+
+    socket.on('connect', () => {
+      const riderData = (() => {
+        try { return JSON.parse(localStorage.getItem('rider_data')) } catch { return null }
+      })()
+      if (riderData?._id) {
+        socket.emit('authenticate', { user_id: riderData._id, device_info: 'riders-panel' })
+      }
+    })
+
     socket.on('ride:requested', (data) => setPendingRequest(data))
     return () => {
+      socket.off('connect')
       socket.off('ride:requested')
     }
   }, [token])
@@ -182,6 +194,7 @@ export function AppProvider({ children }) {
     earningsData, rideHistory,
     toast, showToast,
     loading, setLoading,
+    pendingChatUser, setPendingChatUser,
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>

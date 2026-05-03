@@ -58,6 +58,14 @@ const riderSchema = new Schema(
       type: Schema.Types.Number,
       default: 0,
     },
+    doc_verified: {
+      type: Schema.Types.Boolean,
+      default: false,
+    },
+    vehicle_category: {
+      type: Schema.Types.String,
+      default: 'Bike',
+    },
     driving_liscence_no: {
       type: Schema.Types.String,
       required: true,

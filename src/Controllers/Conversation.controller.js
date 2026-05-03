@@ -1,6 +1,7 @@
 const { ConversationModel, ParticipantsModel } = require('../Models');
 const messages = require('../Constants/messages');
 const { HTTP_CODES } = require('../Constants/enums');
+const ObjectId = require('mongoose').Types.ObjectId;
 
 module.exports = {
   addConversation: async (req, res) => {
@@ -161,6 +162,90 @@ module.exports = {
       return res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: messages.CONVERSATION_DELETE_ERROR,
+        error: error.message,
+      });
+    }
+  },
+
+  getOrCreateDirectConversation: async (req, res) => {
+    try {
+      const { target_user_id } = req.query;
+      const currentUserId = req.user._id;
+
+      if (!target_user_id) {
+        return res.status(HTTP_CODES.BAD_REQUEST).json({
+          success: false,
+          message: 'target_user_id is required',
+        });
+      }
+
+      const [currentUserParticipants, targetUserParticipants] = await Promise.all([
+        ParticipantsModel.find({ user_id: currentUserId }).select('_id'),
+        ParticipantsModel.find({ user_id: new ObjectId(target_user_id) }).select('_id'),
+      ]);
+
+      let conversation = null;
+
+      if (currentUserParticipants.length > 0 && targetUserParticipants.length > 0) {
+        conversation = await ConversationModel.findOne({
+          is_group_chat: false,
+          is_deleted: false,
+          is_active: true,
+          $and: [
+            { participants: { $in: currentUserParticipants.map(p => p._id) } },
+            { participants: { $in: targetUserParticipants.map(p => p._id) } },
+          ],
+        });
+      }
+
+      if (!conversation) {
+        const [currentParticipant, targetParticipant] = await Promise.all([
+          ParticipantsModel.create({ user_id: currentUserId }),
+          ParticipantsModel.create({ user_id: new ObjectId(target_user_id) }),
+        ]);
+
+        conversation = await ConversationModel.create({
+          is_group_chat: false,
+          created_by: currentUserId,
+          participants: [currentParticipant._id, targetParticipant._id],
+        });
+      }
+
+      const [populatedConv] = await ConversationModel.aggregate([
+        { $match: { _id: conversation._id } },
+        {
+          $lookup: {
+            from: 'Participants',
+            localField: 'participants',
+            foreignField: '_id',
+            pipeline: [
+              {
+                $lookup: {
+                  from: 'User_Master',
+                  localField: 'user_id',
+                  foreignField: '_id',
+                  pipeline: [{ $project: { _id: 1, first_name: 1, last_name: 1, profile_pic: 1, status: 1, email: 1 } }],
+                  as: 'user',
+                },
+              },
+              { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
+              { $project: { _id: 1, user_id: 1, user: 1, is_admin: 1 } },
+            ],
+            as: 'participants',
+          },
+        },
+      ]);
+
+      return res.status(HTTP_CODES.OK).json({
+        success: true,
+        message: 'Conversation ready',
+        data: populatedConv || conversation,
+      });
+    } catch (error) {
+      console.error('Error in getOrCreateDirectConversation:', error);
+      return res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: messages.INTERNAL_SERVER_ERROR,
         error: error.message,
       });
     }

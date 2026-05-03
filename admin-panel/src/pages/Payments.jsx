@@ -6,6 +6,7 @@ import {
 import DataTable from '../components/DataTable';
 import StatusBadge from '../components/StatusBadge';
 import { revenueChartData, payouts } from '../data/mockData';
+// Payments page uses mock chart data for visualization; real API data feeds the payout table via AdminContext
 
 const gross = revenueChartData.reduce((s, d) => s + d.gross, 0);
 const commission = revenueChartData.reduce((s, d) => s + d.commission, 0);

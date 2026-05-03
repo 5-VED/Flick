@@ -6,7 +6,7 @@ const { FilterController } = require('../Controllers');
 
 router.post('/',
     auth({
-        iisTokenRequired: true,
+        isTokenRequired: true,
         usersAllowed: [ROLE.USER]
     }),
     FilterController.createFilter

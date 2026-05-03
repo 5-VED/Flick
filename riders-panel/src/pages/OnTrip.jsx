@@ -3,7 +3,7 @@ import { useApp } from '../AppContext'
 import MapView from '../components/MapView'
 
 export default function OnTrip() {
-  const { activeRide, ridePhase, advancePhase, navigate, showToast } = useApp()
+  const { activeRide, ridePhase, advancePhase, navigate, showToast, setPendingChatUser } = useApp()
   const [sosVisible, setSosVisible] = useState(false)
 
   const phaseConfig = {
@@ -67,14 +67,28 @@ export default function OnTrip() {
             <p className="text-white font-body font-semibold">{ride.passenger?.name || 'Passenger'}</p>
             <p className="text-muted text-xs">{ride.passenger?.phone || '+91 XXXXX XXXXX'}</p>
           </div>
-          <a
-            href={`tel:${ride.passenger?.phone}`}
-            className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth="2" className="w-5 h-5">
-              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.1 12 19.79 19.79 0 011.06 3.4a2 2 0 012-2.18h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L7.09 9.1a16 16 0 006.29 6.29l1.17-1.17a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7a2 2 0 011.72 2.05z"/>
-            </svg>
-          </a>
+          <div className="flex gap-2">
+            <a
+              href={`tel:${ride.passenger?.phone}`}
+              className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth="2" className="w-5 h-5">
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.1 12 19.79 19.79 0 011.06 3.4a2 2 0 012-2.18h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L7.09 9.1a16 16 0 006.29 6.29l1.17-1.17a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7a2 2 0 011.72 2.05z"/>
+              </svg>
+            </a>
+            <button
+              onClick={() => {
+                if (ride.passenger?._id) setPendingChatUser({ _id: ride.passenger._id, name: ride.passenger.name })
+                navigate('chat')
+              }}
+              className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center"
+              title="Chat with passenger"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2" className="w-5 h-5">
+                <path d="M21 15c0 .53-.21 1.04-.59 1.41-.37.37-.88.59-1.41.59H7l-4 4V5c0-.53.21-1.04.59-1.41C3.96 3.21 4.47 3 5 3h14c.53 0 1.04.21 1.41.59.38.37.59.88.59 1.41v10z"/>
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Route */}

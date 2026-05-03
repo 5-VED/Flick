@@ -12,3 +12,4 @@ module.exports.RidesModel = require('./Rides.model');
 module.exports.AddressModel = require('./Address.model');
 module.exports.RiderModel = require('./Rider.model');
 module.exports.FilterModel = require('./Filter.model');
+module.exports.DisputeModel = require('./Dispute.model');

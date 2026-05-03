@@ -3,13 +3,24 @@ import { Search, CheckCircle, RefreshCw, AlertOctagon } from 'lucide-react';
 import DataTable from '../components/DataTable';
 import StatusBadge from '../components/StatusBadge';
 import Modal from '../components/Modal';
-import { disputes } from '../data/mockData';
+import { useAdmin } from '../context/AdminContext';
 
 export default function Disputes() {
+  const { disputes: rawDisputes, resolveDispute } = useAdmin();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [selected, setSelected] = useState(null);
-  const [data, setData] = useState(disputes);
+
+  const data = useMemo(() => rawDisputes.map(d => ({
+    id: d._id || d.id,
+    customer: d.customer || (d.raised_by ? `${d.raised_by.first_name || ''} ${d.raised_by.last_name || ''}`.trim() : 'Unknown'),
+    rider: d.rider || (d.against ? `${d.against.first_name || ''} ${d.against.last_name || ''}`.trim() : 'Unknown'),
+    rideId: d.rideId || d.ride_id?._id || d.ride_id || '—',
+    issue: d.issue || d.issue_type || 'Other',
+    status: d.status || 'Open',
+    date: d.date || d.createdAt || new Date().toISOString(),
+    description: d.description || '',
+  })), [rawDisputes]);
 
   const counts = useMemo(() => ({
     All: data.length,
@@ -28,12 +39,12 @@ export default function Disputes() {
   }), [data, search, statusFilter]);
 
   function resolve(id) {
-    setData(prev => prev.map(d => d.id === id ? { ...d, status: 'Resolved' } : d));
+    resolveDispute(id, 'Resolved', 'Resolved by admin');
     if (selected?.id === id) setSelected(s => ({ ...s, status: 'Resolved' }));
   }
 
   function escalate(id) {
-    setData(prev => prev.map(d => d.id === id ? { ...d, status: 'Escalated' } : d));
+    resolveDispute(id, 'Escalated', 'Escalated for review');
     if (selected?.id === id) setSelected(s => ({ ...s, status: 'Escalated' }));
   }
 

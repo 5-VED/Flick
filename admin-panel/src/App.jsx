@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { AdminProvider, useAdmin } from './context/AdminContext';
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import Dashboard from './pages/Dashboard';
@@ -9,6 +10,7 @@ import Rides from './pages/Rides';
 import Payments from './pages/Payments';
 import Disputes from './pages/Disputes';
 import Settings from './pages/Settings';
+import Login from './pages/Login';
 
 const PAGE_TITLES = {
   '/': 'Dashboard',
@@ -20,10 +22,13 @@ const PAGE_TITLES = {
   '/settings': 'Settings',
 };
 
-function AppContent() {
+function ProtectedLayout() {
+  const { user } = useAdmin();
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const title = PAGE_TITLES[location.pathname] ?? 'Dashboard';
+
+  if (!user) return <Navigate to="/login" replace />;
 
   return (
     <div className="flex min-h-screen bg-[#1A1A1A]">
@@ -49,10 +54,22 @@ function AppContent() {
   );
 }
 
+function AppContent() {
+  const { user } = useAdmin();
+  return (
+    <Routes>
+      <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
+      <Route path="/*" element={<ProtectedLayout />} />
+    </Routes>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
-      <AppContent />
+      <AdminProvider>
+        <AppContent />
+      </AdminProvider>
     </BrowserRouter>
   );
 }
