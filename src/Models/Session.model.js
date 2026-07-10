@@ -7,11 +7,6 @@ const sessionSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    socket_id: {
-      type: Schema.Types.String,
-      required: true,
-      trim: true,
-    },
     device_info: {
       type: Schema.Types.String,
       required: true,
@@ -20,13 +15,13 @@ const sessionSchema = new Schema(
     ip_address: {
       type: Schema.Types.String,
     },
-    connected_at: {
+    last_login: {
       type: Schema.Types.Date,
       default: Date.now(),
     },
-    disconnected_at: {
+    expires_at:{
       type: Schema.Types.Date,
-      default: null,
+
     },
     ...baseFieldsSchema.obj,
   },
