@@ -88,6 +88,7 @@ const enums = {
     SUPER_ADMIN: 'SuperAdmin',
     RIDER: 'Rider',
     USER: 'User',
+    GUEST: 'Guest',
     ADMIN: 'Admin',
   },
 

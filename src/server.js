@@ -5,7 +5,7 @@ const server = http.createServer(app);
 const initializeSockets = require('./Sockets/chat');
 const logger = require('./Utils/logger.utils');
 const connectMongoDB = require('./Database/MongoDB');
-const connectRedis = require('./Database/Rdis');
+const connectRedis = require('./Database/Redis');
 
 // Handle uncaught exceptions
 process.on('uncaughtException', error => {
