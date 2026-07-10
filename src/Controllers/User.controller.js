@@ -1,10 +1,19 @@
-const { UserModel, AttachmentsModel, UserAgentModel, RoleModel } = require('../Models');
+const {
+  UserModel,
+  AttachmentsModel,
+  SessionModel,
+  UserAgentModel,
+  RoleModel,
+} = require('../Models');
 const { compare } = require('bcrypt');
 const { JWT_SECRET } = require('../Config/config');
 const jwt = require('jsonwebtoken');
 const messages = require('../Constants/messages');
 const { HTTP_CODES } = require('../Constants/enums');
 const { escapeRegExp } = require('../Utils/string.utils');
+const {
+  ROLE: { ADMIN, GUEST },
+} = require('../Constants/enums');
 
 module.exports = {
   signup: async (req, res) => {
@@ -12,6 +21,7 @@ module.exports = {
       const existing = await UserModel.findOne({
         $or: [{ email: req.body.email }, { phone: req.body.phone }],
       });
+
       if (existing) {
         return res.status(HTTP_CODES.BAD_REQUEST).json({
           success: false,
@@ -26,6 +36,7 @@ module.exports = {
 
       const result = await UserModel.create(req.body);
       const safeUser = result.toObject();
+
       delete safeUser.password;
       delete safeUser.confirmation_code;
 
@@ -47,7 +58,9 @@ module.exports = {
     try {
       const { email, password } = req.body;
 
-      const user = await UserModel.findOne({ email, is_deleted: false, is_active: true }).populate('role');
+      const user = await UserModel.findOne({ email, is_deleted: false, is_active: true }).populate(
+        'role'
+      );
 
       if (!user) {
         return res.status(HTTP_CODES.NOT_FOUND).json({
@@ -64,11 +77,9 @@ module.exports = {
         });
       }
 
-      const token = jwt.sign(
-        { email, _id: user._id, role: user.role?.role },
-        JWT_SECRET,
-        { expiresIn: '7d' }
-      );
+      const token = jwt.sign({ email, _id: user._id, role: user.role?.role }, JWT_SECRET, {
+        expiresIn: '7d',
+      });
 
       if (req.userAgentInfo) {
         const agentPayload = {
@@ -120,7 +131,7 @@ module.exports = {
         return res.status(HTTP_CODES.BAD_REQUEST).json({
           success: false,
           message: messages.VALIDATION_ERROR,
-          errors: ['phone is required'],
+          errors: ['Phone no is required'],
         });
       }
 
@@ -128,18 +139,17 @@ module.exports = {
 
       if (!user) {
         // Auto-create a guest user for phone-only auth
-        const userRole = await RoleModel.findOne({ role: 'User' });
-        const tempPassword = Math.random().toString(36).slice(-8);
+        const userRole = await RoleModel.findOne({ role: GUEST });
         user = await UserModel.create({
           phone,
-          first_name: 'User',
+          first_name: 'Guest',
           last_name: phone.slice(-4),
           email: `${phone}@flick.app`,
-          password: tempPassword,
           country_code: '+91',
           role: userRole?._id,
-          gender: 'male',
+          last_activee_at: new Date.now(),
         });
+        session = await SessionModel.create({});
       }
 
       // Generate 4-digit OTP and store in confirmation_code
@@ -155,7 +165,7 @@ module.exports = {
       };
 
       if (process.env.NODE_ENV !== 'production') {
-        response.data.otp = otp; // Dev only
+        response.data.otp = otp;
       }
 
       return res.status(HTTP_CODES.OK).json(response);
@@ -175,11 +185,13 @@ module.exports = {
         return res.status(HTTP_CODES.BAD_REQUEST).json({
           success: false,
           message: messages.VALIDATION_ERROR,
-          errors: ['phone and otp are required'],
+          errors: ['Pnone and otp is required.'],
         });
       }
 
-      const user = await UserModel.findOne({ phone, is_deleted: false, is_active: true }).populate('role');
+      const user = await UserModel.findOne({ phone, is_deleted: false, is_active: true }).populate(
+        'role'
+      );
 
       if (!user) {
         return res.status(HTTP_CODES.NOT_FOUND).json({
@@ -199,13 +211,12 @@ module.exports = {
       user.confirmation_code = null;
       await user.save({ validateBeforeSave: false });
 
-      const token = jwt.sign(
-        { phone, _id: user._id, role: user.role?.role },
-        JWT_SECRET,
-        { expiresIn: '7d' }
-      );
+      const token = jwt.sign({ phone, _id: user._id, role: user.role?.role }, JWT_SECRET, {
+        expiresIn: '7d',
+      });
 
       const safeUser = user.toObject();
+      
       delete safeUser.password;
       delete safeUser.confirmation_code;
 
@@ -225,7 +236,11 @@ module.exports = {
 
   getProfile: async (req, res) => {
     try {
-      const user = await UserModel.findOne({ _id: req.user._id, is_deleted: false, is_active: true })
+      const user = await UserModel.findOne({
+        _id: req.user._id,
+        is_deleted: false,
+        is_active: true,
+      })
         .populate('role', 'role')
         .select('-password -confirmation_code -__v');
 

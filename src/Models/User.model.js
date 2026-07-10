@@ -56,7 +56,7 @@ const userSchema = new Schema(
       enum: Object.values(USER_STATUS),
       default: 'offline',
     },
-    last_activee_at: {
+    last_active_at: {
       type: Schema.Types.Date,
       default: null,
     },
