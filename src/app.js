@@ -1,4 +1,5 @@
 const express = require('express');
+const cookieParser = require("cookie-parser")
 const cors = require('cors');
 const path = require('path');
 const swaggerUi = require('swagger-ui-express');
@@ -21,6 +22,7 @@ app.use(userAgentMiddleware);
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve uploaded files publicly

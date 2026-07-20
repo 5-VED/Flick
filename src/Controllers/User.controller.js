@@ -15,7 +15,7 @@ const {
   ROLE: { ADMIN, GUEST },
 } = require('../Constants/enums');
 
-module.exports = {
+module.exports = {  
   signup: async (req, res) => {
     try {
       const existing = await UserModel.findOne({
@@ -163,7 +163,7 @@ module.exports = {
         message: messages.OTP_SENT,
         data: { phone },
       };
-
+        
       if (process.env.NODE_ENV !== 'production') {
         response.data.otp = otp;
       }

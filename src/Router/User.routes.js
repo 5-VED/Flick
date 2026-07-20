@@ -6,6 +6,9 @@ const { loginSchema, signupSchema } = require('../Validators/User.validator');
 const { validateRequest } = require('../Middlewares/Validlidator.middleware');
 
 const router = require('express').Router();
+// ===== To do======
+// Addd Session Management
+// Complete Notificatins Service by adding Twillio , Firebase FCM for push
 
 router.post('/signup', validateRequest(signupSchema), UserController.signup);
 
