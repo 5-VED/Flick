@@ -21,11 +21,7 @@ router.get(
   RidesController.getRideHistory
 );
 
-router.get(
-  '/:id',
-  auth({ isTokenRequired: true, usersAllowed: ['*'] }),
-  RidesController.getRide
-);
+router.get('/:id', auth({ isTokenRequired: true, usersAllowed: ['*'] }), RidesController.getRide);
 
 router.patch(
   '/update-status',

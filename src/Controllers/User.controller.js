@@ -15,7 +15,7 @@ const {
   ROLE: { ADMIN, GUEST },
 } = require('../Constants/enums');
 
-module.exports = {  
+module.exports = {
   signup: async (req, res) => {
     try {
       const existing = await UserModel.findOne({
@@ -147,23 +147,21 @@ module.exports = {
           email: `${phone}@flick.app`,
           country_code: '+91',
           role: userRole?._id,
-          last_activee_at: new Date.now(),
+          last_activee_at: Date.now(),
         });
-        session = await SessionModel.create({});
       }
 
       // Generate 4-digit OTP and store in confirmation_code
       const otp = String(Math.floor(1000 + Math.random() * 9000));
-      user.confirmation_code = otp;
-      await user.save({ validateBeforeSave: false });
+      await UserModel.findOneAndUpdate({ phone, is_deleted: false }, { confirmation_code: otp });
 
       // In production: send OTP via SMS. For dev, return OTP in response.
-      const response = {
+      let response = {
         success: true,
         message: messages.OTP_SENT,
         data: { phone },
       };
-        
+
       if (process.env.NODE_ENV !== 'production') {
         response.data.otp = otp;
       }
@@ -216,7 +214,7 @@ module.exports = {
       });
 
       const safeUser = user.toObject();
-      
+
       delete safeUser.password;
       delete safeUser.confirmation_code;
 
