@@ -424,4 +424,35 @@ module.exports = {
       });
     }
   },
+
+  logout: async (req, res) => {
+    try {
+      const userId = req.user?._id;
+
+      if (!userId) {
+        return res.status(HTTP_CODES.UNAUTHORIZED).json({
+          success: false,
+          message: messages.UNAUTHORIZED,
+        });
+      }
+
+      // Mark this user's active session(s) as no longer current
+      await UserAgentModel.updateMany(
+        { user_id: userId, is_current: true },
+        { $set: { is_current: false } }
+      ).catch(() => {});
+
+      return res.status(HTTP_CODES.OK).json({
+        success: true,
+        message: messages.USER_LOGOUT_SUCCESS,
+      });
+    } catch (error) {
+      console.error('logout error:', error);
+      return res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: messages.INTERNAL_SERVER_ERROR,
+        error: error.message,
+      });
+    }
+  },
 };
