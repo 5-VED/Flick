@@ -13,30 +13,25 @@
  *         role:
  *           type: string
  *           description: The name of the role
- *           enum: [ADMIN, USER]
  *         is_active:
  *           type: boolean
  *           default: true
- *           description: Whether the role is active
  *         is_deleted:
  *           type: boolean
  *           default: false
- *           description: Whether the role is deleted
  *         created_at:
  *           type: string
  *           format: date-time
- *           description: When the role was created
  *         updated_at:
  *           type: string
  *           format: date-time
- *           description: When the role was last updated
  */
 
 /**
  * @swagger
  * tags:
  *   name: Roles
- *   description: Role management API
+ *   description: Role management API (SuperAdmin only)
  */
 
 /**
@@ -58,8 +53,10 @@
  *             properties:
  *               role:
  *                 type: string
- *                 enum: [ADMIN, USER]
+ *                 minLength: 2
+ *                 maxLength: 50
  *                 description: Name of the role to create
+ *                 example: Manager
  *     responses:
  *       201:
  *         description: Role created successfully
@@ -103,8 +100,8 @@
  *             properties:
  *               role:
  *                 type: string
- *                 enum: [ADMIN, USER]
  *                 description: Name of the role to remove
+ *                 example: Manager
  *     responses:
  *       200:
  *         description: Role removed successfully
