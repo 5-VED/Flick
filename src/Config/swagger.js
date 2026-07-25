@@ -58,6 +58,15 @@ const options = {
             },
           },
         },
+        Pagination: {
+          type: 'object',
+          properties: {
+            total: { type: 'integer' },
+            page: { type: 'integer' },
+            limit: { type: 'integer' },
+            pages: { type: 'integer' },
+          },
+        },
       },
     },
     security: [
@@ -68,7 +77,31 @@ const options = {
     tags: [
       {
         name: 'Users',
-        description: 'User management endpoints',
+        description: 'User management and authentication endpoints',
+      },
+      {
+        name: 'Roles',
+        description: 'Role management endpoints (SuperAdmin only)',
+      },
+      {
+        name: 'Rider',
+        description: 'Rider registration and profile management',
+      },
+      {
+        name: 'Rides',
+        description: 'Ride booking, tracking, and management',
+      },
+      {
+        name: 'Conversations',
+        description: 'Chat conversation management',
+      },
+      {
+        name: 'Filters',
+        description: 'Dynamic data filtering system',
+      },
+      {
+        name: 'Admin',
+        description: 'Admin dashboard and management endpoints',
       },
     ],
   },

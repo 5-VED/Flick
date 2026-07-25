@@ -4,43 +4,64 @@
  *   schemas:
  *     Conversation:
  *       type: object
- *       required:
- *         - name
- *         - participants
  *       properties:
  *         _id:
  *           type: string
- *           description: The auto-generated id of the conversation
  *         name:
  *           type: string
  *           description: The name of the conversation
  *         is_group_chat:
  *           type: boolean
- *           description: Whether this is a group chat
  *           default: false
  *         created_by:
  *           type: string
- *           description: The ID of the user who created the conversation
+ *           description: ID of the user who created the conversation
  *         total_unread_messages:
  *           type: number
- *           description: Total number of unread messages
  *           default: 0
  *         participants:
  *           type: array
  *           items:
- *             type: string
- *           description: Array of participant IDs
+ *             type: object
+ *             properties:
+ *               _id:
+ *                 type: string
+ *               user_id:
+ *                 type: string
+ *               user:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   first_name:
+ *                     type: string
+ *                   last_name:
+ *                     type: string
+ *                   profile_pic:
+ *                     type: string
+ *                   status:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *               is_admin:
+ *                 type: boolean
  *         last_message:
- *           type: string
- *           description: The last message in the conversation
- *           default: "Hello"
+ *           type: object
+ *           properties:
+ *             content:
+ *               type: string
+ *             sender:
+ *               type: string
+ *             type:
+ *               type: string
+ *             sent_at:
+ *               type: string
+ *               format: date-time
  *         is_active:
  *           type: boolean
- *           description: Whether the conversation is active
  *           default: true
  *         is_deleted:
  *           type: boolean
- *           description: Whether the conversation is deleted
  *           default: false
  */
 
@@ -48,7 +69,7 @@
  * @swagger
  * tags:
  *   name: Conversations
- *   description: Conversation management API
+ *   description: Chat conversation management
  */
 
 /**
@@ -72,11 +93,12 @@
  *               name:
  *                 type: string
  *                 description: Name of the group conversation
+ *                 example: Office Group
  *               participants:
  *                 type: array
  *                 items:
  *                   type: string
- *                 description: Array of participant IDs
+ *                 description: Array of participant ObjectIDs
  *     responses:
  *       201:
  *         description: Group conversation created successfully
@@ -90,11 +112,50 @@
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: Group conversation created successfully
+ *                   example: Group conversation created successfully.
  *                 data:
  *                   $ref: '#/components/schemas/Conversation'
  *       400:
  *         description: Name already exists
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/conversation/direct:
+ *   get:
+ *     summary: Get or create a direct (1-on-1) conversation
+ *     tags: [Conversations]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: target_user_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the other user
+ *     responses:
+ *       200:
+ *         description: Conversation ready
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Conversation ready
+ *                 data:
+ *                   $ref: '#/components/schemas/Conversation'
+ *       400:
+ *         description: target_user_id is required
  *       401:
  *         description: Unauthorized
  *       500:
@@ -115,7 +176,7 @@
  *         required: true
  *         schema:
  *           type: string
- *         description: ID of the conversation to retrieve
+ *         description: ID of the conversation
  *     responses:
  *       200:
  *         description: Conversation retrieved successfully
@@ -138,6 +199,54 @@
  *         description: Unauthorized
  *       404:
  *         description: Conversation not found
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/conversation/get-all:
+ *   get:
+ *     summary: Get all conversations for the authenticated user
+ *     tags: [Conversations]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *     responses:
+ *       200:
+ *         description: Conversations retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Conversation retrieved successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     conversations:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Conversation'
+ *                     count:
+ *                       type: integer
+ *       401:
+ *         description: Unauthorized
  *       500:
  *         description: Internal server error
  */
@@ -171,7 +280,7 @@
  *                 type: array
  *                 items:
  *                   type: string
- *                 description: Updated array of participant IDs
+ *                 description: Updated array of participant ObjectIDs
  *     responses:
  *       200:
  *         description: Conversation updated successfully
@@ -192,8 +301,6 @@
  *         description: Conversation ID is required
  *       401:
  *         description: Unauthorized
- *       403:
- *         description: Permission denied
  *       404:
  *         description: Conversation not found
  *       500:
@@ -204,17 +311,22 @@
  * @swagger
  * /api/v1/conversation/delete:
  *   put:
- *     summary: Delete a conversation
+ *     summary: Soft-delete a conversation by name
  *     tags: [Conversations]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: conversation_id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID of the conversation to delete
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Name of the conversation to delete
  *     responses:
  *       200:
  *         description: Conversation deleted successfully
@@ -230,11 +342,9 @@
  *                   type: string
  *                   example: Conversation deleted successfully
  *       400:
- *         description: Conversation ID is required
+ *         description: Conversation name is required
  *       401:
  *         description: Unauthorized
- *       403:
- *         description: Permission denied
  *       404:
  *         description: Conversation not found
  *       500:

@@ -106,6 +106,14 @@ const messages = {
   CHAT_ERROR_VALIDATION: 'Validation error',
   CHAT_ERROR_UNAUTHORIZED: 'Unauthorized access',
   CHAT_ERROR_NOT_FOUND: 'Resource not found',
+
+  RIDE_ESTIMATE_FETCHED: 'Fare estimate fetched successfully',
+  RIDE_ESTIMATE_ERROR: 'Failed to calculate fare estimate',
+  NO_RIDERS_AVAILABLE: 'No riders available nearby',
+  RIDER_ACCEPTED: 'Rider has accepted the ride',
+  RIDER_REJECTED: 'Rider rejected the ride',
+  RIDE_REQUEST_TIMEOUT: 'Ride request timed out. No riders accepted.',
+  RIDE_ALREADY_ACCEPTED: 'This ride has already been accepted by another rider',
 };
 
 module.exports = messages;

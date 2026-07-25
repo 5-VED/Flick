@@ -26,54 +26,68 @@
  *         role:
  *           type: string
  *           description: Reference to the user's role
+ *         first_name:
+ *           type: string
+ *           description: User's first name
+ *         last_name:
+ *           type: string
+ *           description: User's last name
+ *         gender:
+ *           type: string
+ *           enum: [male, female, other]
+ *           description: User's gender
+ *         country_code:
+ *           type: string
+ *           description: Country code with + prefix
+ *         profile_pic:
+ *           type: string
+ *           description: URL of profile picture
+ *         address:
+ *           type: string
+ *           description: User's address
  *         is_active:
  *           type: boolean
  *           default: true
- *           description: Whether the user account is active
  *         is_deleted:
  *           type: boolean
  *           default: false
- *           description: Whether the user account is deleted
+ *         is_authorized_rider:
+ *           type: boolean
+ *           default: false
+ *         status:
+ *           type: string
+ *           enum: [online, offline, busy, away]
+ *         last_active_at:
+ *           type: string
+ *           format: date-time
  *         attachments:
  *           type: array
  *           items:
  *             $ref: '#/components/schemas/Attachment'
- *           description: User's attachments
- */
-
-/**
- * @swagger
- * components:
- *   schemas:
+ *
  *     Attachment:
  *       type: object
  *       properties:
  *         _id:
  *           type: string
- *           description: The auto-generated id of the attachment
  *         file_name:
  *           type: string
- *           description: Original name of the file
  *         file_type:
  *           type: string
- *           description: MIME type of the file
  *         file_size:
  *           type: string
- *           description: Size of the file in KB
  *         file_url:
  *           type: string
- *           description: URL/path of the uploaded file
  *         uploaded_at:
  *           type: string
  *           format: date-time
- *           description: When the file was uploaded
  */
 
 /**
  * @swagger
  * tags:
  *   name: Users
- *   description: User management API
+ *   description: User management and authentication API
  */
 
 /**
@@ -90,53 +104,50 @@
  *             type: object
  *             required:
  *               - email
- *               - phone
  *               - password
- *               - role
+ *               - phone
  *               - first_name
  *               - last_name
- *               - country_code
  *               - gender
+ *               - country_code
  *             properties:
  *               email:
  *                 type: string
  *                 format: email
- *                 example: tisha@yopmail.com
- *               phone:
- *                 type: string
- *                 example: "1234567893"
+ *                 example: user@example.com
  *               password:
  *                 type: string
  *                 format: password
- *                 example: "Password123!"
+ *                 minLength: 6
+ *                 example: password123
+ *               phone:
+ *                 type: string
+ *                 pattern: '^[0-9]{10}$'
+ *                 example: "9876543210"
  *               first_name:
  *                 type: string
- *                 example: "Tisha"
+ *                 minLength: 2
+ *                 example: John
  *               last_name:
  *                 type: string
- *                 example: "Chandara"
- *               role:
- *                 type: string
- *                 example: "683fe6bf8763c9a0892c7724"
- *               address:
- *                 type: string
- *                 example: "123 Main Street, City, State"
+ *                 minLength: 2
+ *                 example: Doe
  *               gender:
  *                 type: string
- *                 enum: [male, female]
- *                 example: "female"
- *               profile_pic:
- *                 type: string
- *                 format: uri
- *                 example: "https://example.com/profile.jpg"
+ *                 enum: [male, female, other]
+ *                 example: male
  *               country_code:
  *                 type: string
- *                 example: "+1"
+ *                 pattern: '^\+[0-9]{1,4}$'
+ *                 example: "+91"
+ *               role:
+ *                 type: string
+ *                 description: Role ObjectId (optional)
  *               is_authorized_rider:
  *                 type: boolean
- *                 example: false
+ *                 default: false
  *     responses:
- *       200:
+ *       201:
  *         description: User created successfully
  *         content:
  *           application/json:
@@ -148,86 +159,13 @@
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: "User created successfully"
+ *                   example: User created successfully
  *                 data:
- *                   type: object
- *                   properties:
- *                     _id:
- *                       type: string
- *                       example: "507f1f77bcf86cd799439011"
- *                     first_name:
- *                       type: string
- *                       example: "Tisha"
- *                     last_name:
- *                       type: string
- *                       example: "Chandara"
- *                     email:
- *                       type: string
- *                       example: "tisha@yopmail.com"
- *                     phone:
- *                       type: string
- *                       example: "1234567893"
- *                     role:
- *                       type: string
- *                       example: "683fe6bf8763c9a0892c7724"
- *                     address:
- *                       type: string
- *                       example: "123 Main Street, City, State"
- *                     gender:
- *                       type: string
- *                       example: "female"
- *                     profile_pic:
- *                       type: string
- *                       example: "https://example.com/profile.jpg"
- *                     country_code:
- *                       type: string
- *                       example: "+1"
- *                     is_authorized_rider:
- *                       type: boolean
- *                       example: false
- *                     status:
- *                       type: string
- *                       example: "offline"
- *                     is_active:
- *                       type: boolean
- *                       example: true
- *                     is_deleted:
- *                       type: boolean
- *                       example: false
- *                     created_at:
- *                       type: string
- *                       format: date-time
- *                     updated_at:
- *                       type: string
- *                       format: date-time
+ *                   $ref: '#/components/schemas/User'
  *       400:
- *         description: Bad request - Invalid input data
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "User already exists"
+ *         description: Bad request - Validation error or user already exists
  *       500:
  *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Internal server error"
- *                 error:
- *                   type: object
  */
 
 /**
@@ -249,13 +187,14 @@
  *               email:
  *                 type: string
  *                 format: email
- *                 example: john.doe@example.com
+ *                 example: user@example.com
  *               password:
  *                 type: string
  *                 format: password
- *                 example: Password123!
+ *                 minLength: 6
+ *                 example: password123
  *     responses:
- *       201:
+ *       200:
  *         description: Login successful
  *         content:
  *           application/json:
@@ -267,7 +206,7 @@
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: User logged in Successfully
+ *                   example: User logged in Successfully.
  *                 data:
  *                   type: object
  *                   properties:
@@ -275,8 +214,190 @@
  *                       $ref: '#/components/schemas/User'
  *                     token:
  *                       type: string
+ *                       description: JWT token
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Incorrect password
  *       404:
- *         description: User not found or incorrect password
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/user/send-otp:
+ *   post:
+ *     summary: Send OTP to phone number
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - phone
+ *             properties:
+ *               phone:
+ *                 type: string
+ *                 example: "9876543210"
+ *     responses:
+ *       200:
+ *         description: OTP sent successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: OTP sent successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     phone:
+ *                       type: string
+ *                     otp:
+ *                       type: string
+ *                       description: OTP value (returned in dev only)
+ *       404:
+ *         description: No account found with this phone number
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/user/verify-otp:
+ *   post:
+ *     summary: Verify OTP and login
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - phone
+ *               - otp
+ *             properties:
+ *               phone:
+ *                 type: string
+ *                 example: "9876543210"
+ *               otp:
+ *                 type: string
+ *                 example: "123456"
+ *     responses:
+ *       200:
+ *         description: OTP verified successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: OTP verified successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *                     token:
+ *                       type: string
+ *                       description: JWT token
+ *       400:
+ *         description: Invalid or expired OTP
+ *       404:
+ *         description: No account found with this phone number
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/user/profile:
+ *   get:
+ *     summary: Get authenticated user's profile
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Profile fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Profile fetched successfully
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
+ *
+ *   patch:
+ *     summary: Update authenticated user's profile
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *                 example: John
+ *               last_name:
+ *                 type: string
+ *                 example: Updated
+ *               gender:
+ *                 type: string
+ *                 enum: [male, female, other]
+ *               address:
+ *                 type: string
+ *                 example: 123 Main Street, New York
+ *               profile_pic:
+ *                 type: string
+ *                 format: uri
+ *                 example: https://example.com/profile.jpg
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Profile updated successfully
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized
  *       500:
  *         description: Internal server error
  */
@@ -301,6 +422,7 @@
  *                 items:
  *                   type: string
  *                   format: binary
+ *                 description: Files to upload (jpeg/jpg/png/gif/pdf/mp4/mp3, max 20MB each, up to 100 files)
  *     responses:
  *       200:
  *         description: Attachments added successfully
@@ -315,8 +437,12 @@
  *                 message:
  *                   type: string
  *                   example: Attachments added successfully
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Attachment'
  *       400:
- *         description: No files uploaded
+ *         description: No files uploaded or invalid file type
  *       401:
  *         description: Unauthorized
  *       500:
@@ -325,7 +451,7 @@
 
 /**
  * @swagger
- * /api/v1/user/remoe-attachments/{id}:
+ * /api/v1/user/remove-attachments/{id}:
  *   delete:
  *     summary: Remove an attachment
  *     tags: [Users]
@@ -351,7 +477,7 @@
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: Attachment removed successfully
+ *                   example: Attachment removed successfully.
  *       404:
  *         description: Attachment not found
  *       401:
@@ -398,6 +524,66 @@
  *                   $ref: '#/components/schemas/User'
  *       400:
  *         description: Error disabling user
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/user/list:
+ *   get:
+ *     summary: Get list of users (User/Admin)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search by name, email, or phone
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *         description: Number of items per page
+ *     responses:
+ *       200:
+ *         description: Users list fetched
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     total:
+ *                       type: integer
+ *                     page:
+ *                       type: integer
+ *                     limit:
+ *                       type: integer
+ *                     pages:
+ *                       type: integer
  *       401:
  *         description: Unauthorized
  *       500:
