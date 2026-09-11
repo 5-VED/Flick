@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import MapView from '../components/MapView';
+import './LiveTracking.css';
 
 const StarRating = ({ value }) => (
   <div className="flex items-center gap-0.5">
@@ -16,14 +17,10 @@ const StarRating = ({ value }) => (
 const ActionBtn = ({ icon, label, onClick, danger }) => (
   <button
     onClick={onClick}
-    className="flex flex-col items-center gap-1.5 active:scale-90 transition-transform"
+    className="tracking-action-btn"
   >
     <div
-      className="w-12 h-12 rounded-2xl flex items-center justify-center"
-      style={{
-        background: danger ? 'rgba(239,68,68,0.12)' : '#2A2A2A',
-        border: `1.5px solid ${danger ? 'rgba(239,68,68,0.3)' : '#333'}`,
-      }}
+      className={`tracking-action-icon${danger ? ' tracking-action-icon--danger' : ''}`}
     >
       {icon}
     </div>
@@ -65,21 +62,16 @@ export default function LiveTracking() {
   return (
     <div className="screen">
       {/* Map (desktop: right panel owns map) */}
-      <div className="absolute inset-0 lg:hidden" style={{ bottom: '300px' }}>
+      <div className="tracking-map-layer tracking-map-layer--mobile" style={{ bottom: '300px' }}>
         <MapView showRoute showDestination showCaptain captainMoving />
       </div>
 
       {/* Top bar */}
-      <div className="absolute top-0 left-0 right-0 z-10 px-4 pt-12 lg:pt-6">
+      <div className="tracking-topbar">
         <div className="flex items-center justify-between">
           {/* ETA chip */}
           <div
-            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl"
-            style={{
-              background: '#1A1A1A',
-              border: '1.5px solid #FFD700',
-              boxShadow: '0 0 20px rgba(255,215,0,0.2)',
-            }}
+            className="tracking-eta-chip"
           >
             <span className="text-base">⏱️</span>
             <div>
@@ -92,8 +84,7 @@ export default function LiveTracking() {
 
           {/* Status badge */}
           <div
-            className="flex items-center gap-2 px-3 py-2 rounded-2xl"
-            style={{ background: '#1A1A1A', border: '1.5px solid #333' }}
+            className="tracking-status-chip"
           >
             <div
               className="w-2 h-2 rounded-full animate-pulse"
@@ -111,11 +102,11 @@ export default function LiveTracking() {
 
       {/* SOS Modal */}
       {showSOS && (
-        <div className="absolute inset-0 z-50 bg-black/80 flex items-end">
+        <div className="tracking-sos-backdrop">
           <div className="w-full bottom-sheet px-4 pt-6 pb-10 animate-slide-up">
             <div className="w-10 h-1 bg-[#333] rounded-full mx-auto mb-6" />
             <div className="flex flex-col items-center gap-4 mb-6">
-              <div className="w-16 h-16 rounded-full bg-red-500/20 border-2 border-red-500 flex items-center justify-center">
+              <div className="tracking-sos-icon">
                 <span className="text-3xl">🆘</span>
               </div>
               <div className="text-center">
@@ -126,8 +117,7 @@ export default function LiveTracking() {
               </div>
             </div>
             <button
-              className="w-full py-4 rounded-2xl bg-red-500 text-white font-bold text-base mb-3"
-              style={{ boxShadow: '0 4px 24px rgba(239,68,68,0.4)' }}
+              className="tracking-sos-call"
             >
               🚨 Call Emergency Services
             </button>
@@ -139,7 +129,7 @@ export default function LiveTracking() {
       )}
 
       {/* Captain bottom card */}
-      <div className="absolute bottom-0 left-0 right-0 z-10">
+      <div className="tracking-sheet">
         <div className="bottom-sheet px-4 pt-4 pb-8">
           <div className="w-10 h-1 bg-[#333] rounded-full mx-auto mb-4" />
 
@@ -148,15 +138,11 @@ export default function LiveTracking() {
             {/* Avatar */}
             <div className="relative flex-shrink-0">
               <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold"
-                style={{
-                  background: 'linear-gradient(135deg, #FFD700 0%, #E6A800 100%)',
-                  color: '#1A1A1A',
-                }}
+                className="tracking-captain-avatar"
               >
                 {cap.initials}
               </div>
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#1A1A1A] rounded-full flex items-center justify-center">
+              <div className="tracking-captain-status">
                 <div
                   className="w-3.5 h-3.5 rounded-full"
                   style={{ background: status === 'onboard' ? '#22C55E' : '#FFD700' }}

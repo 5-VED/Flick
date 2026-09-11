@@ -2,6 +2,7 @@ import React from 'react';
 import { X, Phone, Mail, Users, Shield, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 import clsx from 'clsx';
+import './InfoPanel.css';
 
 const BACKEND_URL = import.meta.env.VITE_API_URL
   ? import.meta.env.VITE_API_URL.replace('/api/v1', '')
@@ -26,13 +27,13 @@ const InfoPanel = ({ conversation, onClose }) => {
   const statusColor = peerUser?.status === 'online' ? 'bg-green-500' : 'bg-gray-400';
 
   return (
-    <div className="flex flex-col h-full bg-white border-l border-gray-200 w-72 flex-shrink-0">
+    <div className="infopanel-root">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-100">
+      <div className="infopanel-header">
         <h3 className="font-semibold text-gray-800">{isGroup ? 'Group Info' : 'Contact Info'}</h3>
         <button
           onClick={onClose}
-          className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+          className="infopanel-close"
         >
           <X size={18} className="text-gray-500" />
         </button>
@@ -40,16 +41,16 @@ const InfoPanel = ({ conversation, onClose }) => {
 
       <div className="flex-1 overflow-y-auto">
         {/* Avatar & name */}
-        <div className="flex flex-col items-center py-6 px-4 border-b border-gray-100">
+        <div className="infopanel-hero">
           <div className="relative">
             {(isGroup ? conversation.group_avatar : peerUser?.profile_pic) ? (
               <img
                 src={`${BACKEND_URL}${isGroup ? conversation.group_avatar : peerUser.profile_pic}`}
                 alt={displayName}
-                className="w-20 h-20 rounded-full object-cover"
+                className="infopanel-avatar"
               />
             ) : (
-              <div className="w-20 h-20 rounded-full bg-primary text-white flex items-center justify-center text-3xl font-bold">
+              <div className="infopanel-avatar-fallback">
                 {initials}
               </div>
             )}
@@ -79,10 +80,10 @@ const InfoPanel = ({ conversation, onClose }) => {
         {/* Contact details (DM only) */}
         {!isGroup && peerUser && (
           <div className="px-4 py-4 border-b border-gray-100 space-y-3">
-            <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Contact</h4>
+            <h4 className="infopanel-section-title">Contact</h4>
             {peerUser.email && (
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+              <div className="infopanel-contact-row">
+                <div className="infopanel-icon-circle bg-blue-50">
                   <Mail size={14} className="text-primary" />
                 </div>
                 <div>
@@ -92,8 +93,8 @@ const InfoPanel = ({ conversation, onClose }) => {
               </div>
             )}
             {peerUser.phone && (
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center">
+              <div className="infopanel-contact-row">
+                <div className="infopanel-icon-circle bg-green-50">
                   <Phone size={14} className="text-green-600" />
                 </div>
                 <div>
@@ -108,13 +109,13 @@ const InfoPanel = ({ conversation, onClose }) => {
         {/* Group participants */}
         {isGroup && (
           <div className="px-4 py-4">
-            <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center">
+            <h4 className="infopanel-section-title flex items-center">
               <Users size={12} className="mr-1" />
               Participants
             </h4>
             <div className="space-y-2">
               {/* Current user first */}
-              <div className="flex items-center space-x-3 p-1.5 rounded-lg">
+              <div className="infopanel-participant">
                 <div className="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
                   {currentUser?.first_name?.charAt(0).toUpperCase()}
                 </div>
@@ -130,7 +131,7 @@ const InfoPanel = ({ conversation, onClose }) => {
                 .map((p, i) => {
                   const u = p.user || p;
                   return (
-                    <div key={i} className="flex items-center space-x-3 p-1.5 rounded-lg hover:bg-gray-50">
+                    <div key={i} className="infopanel-participant">
                       <div className="w-9 h-9 rounded-full bg-gray-400 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
                         {(u.first_name || '?').charAt(0).toUpperCase()}
                       </div>

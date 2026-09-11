@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Search } from 'lucide-react';
+import './EmojiPicker.css';
 
 const EMOJIS = {
   '😊 Smileys': [
@@ -53,9 +54,9 @@ const EmojiPicker = ({ onSelect, onClose }) => {
     : EMOJIS[activeTab];
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl shadow-xl w-72 overflow-hidden">
+    <div className="emoji-root">
       {/* Search */}
-      <div className="p-2 border-b border-gray-100">
+      <div className="emoji-search-wrap">
         <div className="relative">
           <Search className="absolute left-2.5 top-2 text-gray-400" size={14} />
           <input
@@ -64,21 +65,19 @@ const EmojiPicker = ({ onSelect, onClose }) => {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search emoji..."
-            className="w-full pl-8 pr-3 py-1.5 text-sm bg-gray-100 rounded-full focus:outline-none focus:ring-1 focus:ring-primary"
+            className="emoji-search-input"
           />
         </div>
       </div>
 
       {/* Category tabs */}
       {!search && (
-        <div className="flex overflow-x-auto border-b border-gray-100 px-1">
+        <div className="emoji-tabs">
           {Object.keys(EMOJIS).map(cat => (
             <button
               key={cat}
               onClick={() => setActiveTab(cat)}
-              className={`px-2 py-1.5 text-base flex-shrink-0 rounded transition-colors ${
-                activeTab === cat ? 'bg-primary/10' : 'hover:bg-gray-50'
-              }`}
+              className={`emoji-tab${activeTab === cat ? ' is-active' : ''}`}
               title={cat}
             >
               {cat.split(' ')[0]}
@@ -88,19 +87,19 @@ const EmojiPicker = ({ onSelect, onClose }) => {
       )}
 
       {/* Emoji grid */}
-      <div className="p-2 h-44 overflow-y-auto">
-        <div className="grid grid-cols-8 gap-0.5">
+      <div className="emoji-grid-wrap">
+        <div className="emoji-grid">
           {filtered.map((emoji, i) => (
             <button
               key={i}
               onClick={() => { onSelect(emoji); onClose?.(); }}
-              className="text-xl p-1 rounded hover:bg-gray-100 transition-colors flex items-center justify-center"
+              className="emoji-btn"
             >
               {emoji}
             </button>
           ))}
           {filtered.length === 0 && (
-            <p className="col-span-8 text-center text-gray-400 text-sm py-4">No results</p>
+            <p className="emoji-empty">No results</p>
           )}
         </div>
       </div>

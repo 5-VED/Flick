@@ -3,6 +3,7 @@ import api from '../services/api';
 import { getSocket } from '../services/socket';
 import { X, Search, Check, Users } from 'lucide-react';
 import clsx from 'clsx';
+import './GroupCreateModal.css';
 
 const GroupCreateModal = ({ onClose, onGroupCreated }) => {
   const [groupName, setGroupName] = useState('');
@@ -70,15 +71,15 @@ const GroupCreateModal = ({ onClose, onGroupCreated }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col max-h-[80vh]">
+    <div className="groupmodal-backdrop">
+      <div className="groupmodal-card">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-100">
+        <div className="groupmodal-header">
           <div className="flex items-center space-x-2">
             <Users size={20} className="text-primary" />
             <h2 className="font-bold text-gray-800 text-lg">New Group</h2>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-full hover:bg-gray-100">
+          <button onClick={onClose} className="groupmodal-close">
             <X size={18} className="text-gray-500" />
           </button>
         </div>
@@ -91,7 +92,7 @@ const GroupCreateModal = ({ onClose, onGroupCreated }) => {
             placeholder="Group name..."
             value={groupName}
             onChange={e => setGroupName(e.target.value)}
-            className="w-full bg-gray-100 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+            className="groupmodal-input"
           />
         </div>
 
@@ -101,7 +102,7 @@ const GroupCreateModal = ({ onClose, onGroupCreated }) => {
             {selected.map(u => (
               <span
                 key={u._id}
-                className="flex items-center bg-primary/10 text-primary rounded-full px-2.5 py-1 text-xs font-medium"
+                className="groupmodal-chip"
               >
                 {u.first_name}
                 <button
@@ -124,7 +125,8 @@ const GroupCreateModal = ({ onClose, onGroupCreated }) => {
               placeholder="Add participants..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full bg-gray-100 rounded-full pl-8 pr-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+              className="groupmodal-input"
+              style={{ paddingLeft: '2rem' }}
             />
           </div>
         </div>
@@ -140,7 +142,7 @@ const GroupCreateModal = ({ onClose, onGroupCreated }) => {
                 <div
                   key={u._id}
                   onClick={() => toggleUser(u)}
-                  className="flex items-center p-2.5 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors"
+                  className="groupmodal-user-row"
                 >
                   <div className="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm mr-3 flex-shrink-0">
                     {u.first_name?.charAt(0).toUpperCase()}
@@ -152,8 +154,8 @@ const GroupCreateModal = ({ onClose, onGroupCreated }) => {
                     <p className="text-xs text-gray-400 truncate">{u.email}</p>
                   </div>
                   <div className={clsx(
-                    'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors',
-                    isSelected ? 'bg-primary border-primary' : 'border-gray-300'
+                    'groupmodal-check',
+                    isSelected && 'is-on'
                   )}>
                     {isSelected && <Check size={11} className="text-white" />}
                   </div>
@@ -172,10 +174,10 @@ const GroupCreateModal = ({ onClose, onGroupCreated }) => {
             onClick={handleCreate}
             disabled={!groupName.trim() || selected.length < 2 || creating}
             className={clsx(
-              'w-full py-2.5 rounded-full font-semibold text-sm transition-colors',
+              'groupmodal-create-btn',
               groupName.trim() && selected.length >= 2
-                ? 'bg-primary text-white hover:bg-primary/90'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                ? 'is-ready'
+                : 'is-disabled'
             )}
           >
             {creating ? 'Creating...' : 'Create Group'}

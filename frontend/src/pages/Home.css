@@ -1,0 +1,96 @@
+/* ================= Home page =================
+   Scoped with .home- prefix. */
+
+.home-map-layer { position: absolute; inset: 0; }
+
+.home-topbar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 10;
+  padding: 3rem 1rem 1rem;
+}
+@media (min-width: 1024px) {
+  .home-topbar { padding-top: 1.5rem; }
+}
+
+.home-user-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid #333;
+  border-radius: 1rem;
+  padding: 0.625rem 0.875rem;
+}
+.home-avatar {
+  width: 1.75rem; height: 1.75rem;
+  border-radius: 9999px;
+  background: #ffd700;
+  display: flex; align-items: center; justify-content: center;
+}
+.home-avatar span { color: #1a1a1a; font-size: 0.75rem; font-weight: 700; }
+.home-greet { color: #888; font-size: 10px; line-height: 1.2; }
+.home-name { color: #fff; font-size: 0.875rem; font-weight: 600; line-height: 1.2; }
+
+.home-wallet-chip {
+  display: flex; align-items: center; gap: 0.375rem;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 1rem;
+  padding: 0.5rem 0.75rem;
+}
+.home-notif-btn {
+  width: 2.5rem; height: 2.5rem;
+  border-radius: 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid #333;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.home-notif-dot {
+  position: absolute; top: 0.5rem; right: 0.5rem;
+  width: 0.5rem; height: 0.5rem;
+  background: #ffd700; border-radius: 9999px;
+}
+
+.home-sheet-wrap {
+  position: absolute; bottom: 4rem; left: 0; right: 0; z-index: 10;
+}
+
+.home-pickup-dot {
+  width: 0.75rem; height: 0.75rem;
+  border-radius: 9999px;
+  border: 2px solid #ffd700;
+  background: rgba(255, 215, 0, 0.2);
+}
+.home-drop-dot {
+  width: 0.75rem; height: 0.75rem;
+  border-radius: 9999px;
+  background: #888;
+}
+.home-route-line { width: 2px; height: 1rem; background: #333; }
+
+.home-search-input { background: #2a2a2a; }
+
+.home-quick-btn {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem; border-radius: 1rem;
+  background: #2a2a2a; width: 100%; text-align: left;
+  transition: background-color 0.15s ease;
+}
+.home-quick-btn:active { background: #333; }
+.home-quick-icon {
+  width: 2.5rem; height: 2.5rem;
+  border-radius: 0.75rem; background: #333;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.125rem; flex-shrink: 0;
+}
+
+.home-avail-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.75rem 0;
+  border-top: 1px solid #2a2a2a;
+}

@@ -4,6 +4,7 @@ import { getSocket } from '../services/socket';
 import api from '../services/api';
 import MessageBubble from './MessageBubble';
 import EmojiPicker from './EmojiPicker';
+import './ChatWindow.css';
 import {
   Send, Paperclip, Smile, X, Search, Info,
   ChevronDown, Reply as ReplyIcon, ArrowLeft
@@ -392,13 +393,13 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
     : (isOnline ? 'Online' : 'Offline');
 
   return (
-    <div className="flex flex-col h-full relative">
+    <div className="chatwin-root">
       {/* ── Header ──────────────────────────────────────────────────── */}
-      <div className="h-14 border-b border-gray-200 bg-white flex items-center px-4 shadow-sm z-10 gap-3">
+      <div className="chatwin-header">
         {onBack && (
           <button
             onClick={onBack}
-            className="p-1.5 -ml-1 rounded-full hover:bg-gray-100 text-gray-500 transition-colors flex-shrink-0"
+            className="chatwin-back-btn"
             title="Back"
           >
             <ArrowLeft size={20} />
@@ -406,19 +407,19 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
         )}
 
         <div className="relative flex-shrink-0">
-          <div className="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
+          <div className="chatwin-avatar">
             {displayName.charAt(0).toUpperCase()}
           </div>
           {!conversation.is_group_chat && (
             <span className={clsx(
-              'absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white',
-              isOnline ? 'bg-green-500' : 'bg-gray-400'
+              'chatwin-status-dot',
+              isOnline ? 'is-online' : 'is-offline'
             )} />
           )}
         </div>
 
         <div className="flex-1 min-w-0" onClick={() => onInfoOpen?.()}>
-          <h2 className="font-semibold text-gray-800 text-sm truncate cursor-pointer hover:text-primary">
+          <h2 className="chatwin-title">
             {displayName}
           </h2>
           {typingUser ? (
@@ -434,8 +435,8 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
         <button
           onClick={() => setShowSearch(v => !v)}
           className={clsx(
-            'p-2 rounded-full transition-colors',
-            showSearch ? 'bg-primary/10 text-primary' : 'hover:bg-gray-100 text-gray-500'
+            'chatwin-icon-btn',
+            showSearch && 'is-active'
           )}
           title="Search messages"
         >
@@ -443,7 +444,7 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
         </button>
         <button
           onClick={() => onInfoOpen?.()}
-          className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
+          className="chatwin-icon-btn"
           title="Info"
         >
           <Info size={18} />
@@ -454,7 +455,7 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
       {showSearch && (
         <form
           onSubmit={handleSearch}
-          className="flex items-center gap-2 px-4 py-2 bg-white border-b border-gray-100"
+          className="chatwin-searchbar"
         >
           <Search size={15} className="text-gray-400 flex-shrink-0" />
           <input
@@ -463,7 +464,7 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search in conversation..."
-            className="flex-1 text-sm bg-transparent outline-none text-gray-700 placeholder-gray-400"
+            className="chatwin-search-input"
           />
           {searchQuery && (
             <button type="button" onClick={clearSearch} className="text-gray-400 hover:text-gray-600">
@@ -478,7 +479,7 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
       <div
         ref={messagesContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto p-4 space-y-0.5 bg-[#f0f0f0]/40 relative"
+        className="chatwin-messages"
       >
         {loadingMore && (
           <div className="text-center py-2">
@@ -497,14 +498,14 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
         )}
 
         {loading ? (
-          <div className="flex items-center justify-center h-full">
+          <div className="chatwin-loading">
             <div className="text-center text-gray-400">
-              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+              <div className="chatwin-spinner" />
               <p className="text-sm">Loading messages...</p>
             </div>
           </div>
         ) : messages.length === 0 ? (
-          <div className="flex items-center justify-center h-full">
+          <div className="chatwin-loading">
             <div className="text-center text-gray-400">
               <p className="text-4xl mb-2">💬</p>
               <p className="text-sm">
@@ -523,7 +524,7 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
                 {/* Date separator */}
                 {!sameDay && msg._time && (
                   <div className="flex items-center justify-center my-3">
-                    <span className="bg-white/80 text-gray-500 text-xs px-3 py-1 rounded-full shadow-sm">
+                    <span className="chatwin-date-pill">
                       {new Date(msg._time).toDateString() === new Date().toDateString()
                         ? 'Today'
                         : new Date(msg._time).toDateString() === new Date(Date.now() - 86400000).toDateString()
@@ -550,7 +551,7 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
         {/* Typing dots */}
         {typingUser && (
           <div className="flex justify-start mt-1">
-            <div className="bg-white border border-gray-100 rounded-2xl rounded-bl-none px-4 py-2 shadow-sm">
+            <div className="chatwin-typing-bubble">
               <div className="flex space-x-1 items-center h-4">
                 <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0ms]" />
                 <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:150ms]" />
@@ -566,17 +567,17 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
       {showScrollBtn && (
         <button
           onClick={() => scrollToBottom()}
-          className="absolute bottom-24 right-6 w-9 h-9 bg-white border border-gray-200 rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors z-10"
+          className="chatwin-scroll-btn"
         >
           <ChevronDown size={18} className="text-gray-600" />
         </button>
       )}
 
       {/* ── Input area ───────────────────────────────────────────────── */}
-      <div className="bg-white border-t border-gray-200 relative">
+      <div className="chatwin-input-area">
         {/* Attachment previews */}
         {attachments.length > 0 && (
-          <div className="flex gap-2 px-4 pt-3 flex-wrap">
+          <div className="chatwin-attach-strip">
             {attachments.map(att => {
               const isImage = att.file_type?.startsWith('image/');
               const BACKEND_URL = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:5000';
@@ -584,16 +585,16 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
               return (
                 <div key={att._id} className="relative group">
                   {isImage ? (
-                    <img src={url} alt={att.file_name} className="h-16 w-16 rounded-lg object-cover border border-gray-200" />
+                    <img src={url} alt={att.file_name} className="chatwin-attach-thumb" />
                   ) : (
-                    <div className="h-16 w-24 rounded-lg bg-gray-100 border border-gray-200 flex flex-col items-center justify-center text-xs text-gray-500 p-1">
+                    <div className="chatwin-attach-file">
                       <span className="text-xl">📄</span>
                       <span className="truncate w-full text-center">{att.file_name}</span>
                     </div>
                   )}
                   <button
                     onClick={() => removeAttachment(att._id)}
-                    className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="chatwin-attach-remove"
                   >
                     <X size={10} />
                   </button>
@@ -601,8 +602,8 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
               );
             })}
             {uploadingFile && (
-              <div className="h-16 w-16 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center">
-                <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              <div className="chatwin-attach-file">
+                <div className="chatwin-spinner chatwin-spinner--sm" />
               </div>
             )}
           </div>
@@ -611,8 +612,8 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
         {/* Reply / Edit preview */}
         {(replyTo || editMsg) && (
           <div className={clsx(
-            'flex items-center gap-2 px-4 pt-2 pb-1 border-t border-gray-100',
-            editMsg ? 'bg-yellow-50' : 'bg-blue-50'
+            'chatwin-preview-bar',
+            editMsg ? 'is-edit' : 'is-reply'
           )}>
             <div className="flex-1 min-w-0">
               <p className={clsx('text-xs font-semibold', editMsg ? 'text-yellow-700' : 'text-primary')}>
@@ -633,7 +634,7 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
 
         {/* Emoji picker */}
         {showEmoji && (
-          <div className="absolute bottom-full left-4 mb-1 z-20">
+          <div className="chatwin-emoji-wrap">
             <EmojiPicker
               onSelect={e => setInputValue(prev => prev + e)}
               onClose={() => setShowEmoji(false)}
@@ -641,13 +642,13 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
           </div>
         )}
 
-        <form onSubmit={handleSendMessage} className="flex items-end gap-2 p-3">
+        <form onSubmit={handleSendMessage} className="chatwin-form">
           <button
             type="button"
             onClick={() => setShowEmoji(v => !v)}
             className={clsx(
-              'p-2 rounded-full transition-colors flex-shrink-0 mb-0.5',
-              showEmoji ? 'bg-primary/10 text-primary' : 'text-gray-500 hover:text-gray-700'
+              'chatwin-tool-btn',
+              showEmoji && 'is-active'
             )}
           >
             <Smile size={22} />
@@ -656,7 +657,7 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="p-2 text-gray-500 hover:text-gray-700 transition-colors flex-shrink-0 mb-0.5"
+            className="chatwin-tool-btn"
             disabled={uploadingFile}
           >
             <Paperclip size={22} />
@@ -672,7 +673,7 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
           <textarea
             ref={inputRef}
             rows={1}
-            className="flex-1 bg-gray-100 border-0 rounded-2xl px-4 py-2 focus:ring-1 focus:ring-primary outline-none text-sm resize-none max-h-32 overflow-y-auto"
+            className="chatwin-textarea"
             placeholder="Type a message..."
             value={inputValue}
             onChange={e => { setInputValue(e.target.value); emitTyping(); }}
@@ -684,10 +685,10 @@ const ChatWindow = ({ conversation, onConversationCreated, onInfoOpen, onBack })
           <button
             type="submit"
             className={clsx(
-              'p-2 rounded-full transition-colors flex-shrink-0 mb-0.5',
+              'chatwin-send-btn',
               (inputValue.trim() || attachments.length > 0)
-                ? 'bg-primary text-white hover:bg-primary/90'
-                : 'bg-gray-200 text-gray-400 cursor-default'
+                ? 'is-ready'
+                : 'is-idle'
             )}
             disabled={!inputValue.trim() && attachments.length === 0}
           >

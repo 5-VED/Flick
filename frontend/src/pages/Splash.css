@@ -1,0 +1,194 @@
+/* ============ Splash — design tokens ============ */
+.splash {
+  --splash-gold: #FFD700;
+  --splash-gold-soft: rgba(255, 215, 0, 0.07);
+  --splash-gold-glow: rgba(255, 215, 0, 0.45);
+  --splash-gold-glow-far: rgba(255, 215, 0, 0.15);
+  --splash-ink: #1A1A1A;
+  --splash-muted: #888888;
+  --splash-faint: #555555;
+  --splash-faintest: #3D3D3D;
+  --splash-card: #222222;
+  --splash-border: #333333;
+  --splash-cta-width: 320px;
+  --splash-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: clamp(1.5rem, 5vh, 3rem) 1.5rem;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* ============ Backdrop ============ */
+.splash__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 30%, var(--splash-gold-soft) 0%, transparent 70%),
+    #1A1A1A;
+}
+.splash__stripe {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: var(--splash-gold);
+  pointer-events: none;
+}
+.splash__stripe--main { right: 0; width: 4px; opacity: 0.05; }
+.splash__stripe--sub  { right: 1rem; width: 2px; opacity: 0.03; }
+
+.splash__spacer { min-height: 1px; }
+
+/* ============ Center content ============ */
+.splash__main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s var(--splash-ease), transform 0.7s var(--splash-ease);
+}
+.splash__main.is-visible { opacity: 1; transform: translateY(0); }
+
+.splash__logo { animation: splash-float 3.2s ease-in-out infinite; }
+.splash__logo-glow {
+  border-radius: 28px;
+  padding: 4px;
+  line-height: 0;
+  box-shadow:
+    0 0 60px var(--splash-gold-glow),
+    0 0 120px var(--splash-gold-glow-far);
+}
+
+.splash__brand { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+.splash__title {
+  margin: 0;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3.5rem, 18vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: 0.06em;
+  color: #fff;
+}
+.splash__subtitle {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--splash-muted);
+}
+
+.splash__badges {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s var(--splash-ease) 0.1s, transform 0.5s var(--splash-ease) 0.1s;
+}
+.splash__badges.is-visible { opacity: 1; transform: translateY(0); }
+.splash__badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--splash-muted);
+  background: var(--splash-card);
+  border: 1px solid var(--splash-border);
+  padding: 0.375rem 0.75rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* ============ Bottom CTA — fixed-width, centered ============ */
+.splash__cta {
+  width: 100%;
+  max-width: var(--splash-cta-width);
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s var(--splash-ease) 0.3s, transform 0.6s var(--splash-ease) 0.3s;
+}
+.splash__cta.is-visible { opacity: 1; transform: translateY(0); }
+
+.splash__btn {
+  /* Fixed size: never stretches full-bleed on wide screens */
+  width: 100%;
+  max-width: var(--splash-cta-width);
+  min-height: 52px;
+  margin-inline: auto;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--splash-ink);
+  background: var(--splash-gold);
+  border: none;
+  border-radius: 1rem;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 4px 28px rgba(255, 215, 0, 0.4);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.splash__btn:hover { background: #FFDE33; box-shadow: 0 6px 32px rgba(255, 215, 0, 0.5); transform: translateY(-1px); }
+.splash__btn:active { transform: scale(0.97); box-shadow: 0 2px 16px rgba(255, 215, 0, 0.35); }
+.splash__btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.splash__btn svg { display: block; }
+
+.splash__login {
+  margin: 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--splash-faint);
+}
+.splash__login-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--splash-gold);
+  cursor: pointer;
+}
+.splash__login-btn:hover { text-decoration: underline; }
+.splash__login-btn:focus-visible { outline: 2px solid var(--splash-gold); outline-offset: 2px; border-radius: 4px; }
+
+.splash__legal {
+  margin: 0.5rem 0 0;
+  text-align: center;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--splash-faintest);
+}
+.splash__legal strong { color: var(--splash-faint); font-weight: 500; }
+
+@keyframes splash-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@media (max-height: 600px) {
+  .splash { padding-block: 1.25rem; }
+  .splash__main { gap: 1.25rem; }
+  .splash__title { font-size: 3rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash__logo { animation: none; }
+  .splash__main, .splash__badges, .splash__cta { transition: opacity 0.2s linear; transform: none; }
+}

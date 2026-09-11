@@ -1,0 +1,38 @@
+/* ================= BottomNav =================
+   Scoped with .bottomnav- prefix. */
+
+.bottomnav-wrap {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 50;
+  background: linear-gradient(to top, #1a1a1a 60%, transparent);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.bottomnav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0.75rem 0.5rem 0.5rem;
+}
+
+.bottomnav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1.5rem;
+  border-radius: 1rem;
+  background: transparent;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+.bottomnav-tab:active { transform: scale(0.9); }
+.bottomnav-tab.is-active { background: rgba(255, 215, 0, 0.08); }
+
+.bottomnav-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #666;
+}
+.bottomnav-tab.is-active .bottomnav-label { color: #ffd700; }

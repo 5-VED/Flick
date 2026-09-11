@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import MapView from '../components/MapView';
+import './FindingCaptain.css';
 
 const RadarRing = ({ delay, size }) => (
   <div
-    className="absolute rounded-full border border-[#FFD700] radar-wave"
+    className="finding-radar-ring radar-wave"
     style={{
       width: `${size}px`,
       height: `${size}px`,
-      top: '50%',
-      left: '50%',
       marginLeft: `-${size / 2}px`,
       marginTop: `-${size / 2}px`,
       animationDelay: `${delay}s`,
-      opacity: 0,
     }}
   />
 );
@@ -41,16 +39,16 @@ export default function FindingCaptain() {
   return (
     <div className="screen">
       {/* Dimmed map in background (desktop: right panel owns map) */}
-      <div className="absolute inset-0 opacity-30 lg:hidden">
+      <div className="finding-map-dim lg:hidden">
         <MapView showBikes />
       </div>
-      <div className="absolute inset-0 bg-[#1A1A1A]/75 lg:hidden" />
+      <div className="finding-overlay lg:hidden" />
 
       {/* Top back button */}
-      <div className="absolute top-0 left-0 right-0 z-10 px-4 pt-12 lg:pt-6">
+      <div className="finding-topbar">
         <div className="flex items-center gap-3">
           <div
-            className="flex items-center gap-2 bg-[#222] border border-[#333] rounded-2xl px-3 py-2"
+            className="finding-ride-chip"
           >
             <span className="text-lg">{selectedRide?.emoji || '🏍️'}</span>
             <span className="text-white text-sm font-semibold">{selectedRide?.label || 'Bike'}</span>
@@ -61,7 +59,7 @@ export default function FindingCaptain() {
       </div>
 
       {/* Center radar animation */}
-      <div className="absolute inset-0 flex items-center justify-center z-10">
+      <div className="finding-center">
         <div className="flex flex-col items-center gap-8">
           {/* Radar */}
           <div className="relative w-48 h-48 flex items-center justify-center">
@@ -71,21 +69,12 @@ export default function FindingCaptain() {
 
             {/* Spinning arc */}
             <div
-              className="absolute w-36 h-36 rounded-full animate-radar-spin"
-              style={{
-                background:
-                  'conic-gradient(from 0deg, transparent 270deg, rgba(255,215,0,0.15) 290deg, rgba(255,215,0,0.4) 360deg)',
-              }}
+              className="finding-radar-sweep animate-radar-spin"
             />
 
             {/* Center icon */}
             <div
-              className="relative z-10 w-20 h-20 rounded-full flex items-center justify-center"
-              style={{
-                background: '#1E1E1E',
-                border: '2px solid #FFD700',
-                boxShadow: '0 0 30px rgba(255,215,0,0.35), 0 0 60px rgba(255,215,0,0.12)',
-              }}
+              className="finding-radar-core"
             >
               <span className="text-4xl">🏍️</span>
             </div>
@@ -111,8 +100,7 @@ export default function FindingCaptain() {
             ].map(({ label, value }) => (
               <div key={label} className="flex flex-col items-center gap-1">
                 <span
-                  className="text-2xl font-bold"
-                  style={{ fontFamily: 'Bebas Neue', color: '#FFD700' }}
+                  className="finding-stat-val"
                 >
                   {value}
                 </span>
@@ -124,7 +112,7 @@ export default function FindingCaptain() {
       </div>
 
       {/* Bottom cancel */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 px-6 pb-10">
+      <div className="finding-sheet">
         <div className="bottom-sheet px-4 py-4">
           <div className="w-10 h-1 bg-[#333] rounded-full mx-auto mb-4" />
           <div className="flex items-center justify-between mb-4">
@@ -133,26 +121,16 @@ export default function FindingCaptain() {
               <p className="text-[#888] text-xs">Looking for nearby captains</p>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 bg-[#FFD700] rounded-full animate-pulse" />
+              <div className="finding-live-dot" />
               <span className="text-[#FFD700] text-xs font-semibold">Live</span>
             </div>
           </div>
 
           {/* Progress bar */}
-          <div className="w-full h-1.5 bg-[#2A2A2A] rounded-full mb-4 overflow-hidden">
+          <div className="finding-progress-track">
             <div
-              className="h-full bg-[#FFD700] rounded-full"
-              style={{
-                animation: 'progressFill 4s linear forwards',
-                width: '0%',
-              }}
+              className="finding-progress-fill"
             >
-              <style>{`
-                @keyframes progressFill {
-                  from { width: 0% }
-                  to { width: 100% }
-                }
-              `}</style>
             </div>
           </div>
 

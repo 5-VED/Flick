@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import './RideHistory.css';
 
 const typeConfig = {
   bike: { emoji: '🏍️', color: '#FFD700' },
@@ -16,7 +17,7 @@ const RideCard = ({ ride }) => {
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
           <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+            className="history-ride-icon"
             style={{ background: `${cfg.color}15`, border: `1.5px solid ${cfg.color}30` }}
           >
             {cfg.emoji}
@@ -29,11 +30,7 @@ const RideCard = ({ ride }) => {
         <div className="text-right">
           <p className="text-white font-bold text-base">₹{ride.fare}</p>
           <span
-            className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-            style={{
-              background: isCompleted ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
-              color: isCompleted ? '#22C55E' : '#EF4444',
-            }}
+            className={`history-status-pill${isCompleted ? ' is-completed' : ' is-cancelled'}`}
           >
             {isCompleted ? 'Completed' : 'Cancelled'}
           </span>
@@ -41,7 +38,7 @@ const RideCard = ({ ride }) => {
       </div>
 
       {/* Route */}
-      <div className="flex items-center gap-2 py-2 px-3 bg-[#2A2A2A] rounded-xl">
+      <div className="history-ride-route">
         <div className="flex flex-col items-center gap-0.5 flex-shrink-0">
           <div className="w-2 h-2 rounded-full" style={{ background: cfg.color }} />
           <div className="w-px h-4 bg-[#3A3A3A]" />
@@ -109,17 +106,15 @@ export default function RideHistory() {
   return (
     <div className="screen flex flex-col pb-20">
       {/* Header */}
-      <div className="flex-shrink-0 px-4 pt-12 pb-2">
+      <div className="history-header">
         <div className="flex items-center justify-between mb-4">
           <h1
-            className="text-3xl text-white tracking-wide"
-            style={{ fontFamily: 'Bebas Neue' }}
+            className="history-title"
           >
             My Rides
           </h1>
           <div
-            className="px-3 py-1.5 rounded-xl"
-            style={{ background: 'rgba(255,215,0,0.08)', border: '1px solid rgba(255,215,0,0.2)' }}
+            className="history-spent-pill"
           >
             <span className="text-[#FFD700] text-xs font-bold">₹{totalSpent} spent</span>
           </div>
@@ -142,8 +137,7 @@ export default function RideHistory() {
           ].map(({ label, val, icon }) => (
             <div
               key={label}
-              className="flex flex-col items-center gap-1 py-3 rounded-2xl"
-              style={{ background: '#222', border: '1px solid #2D2D2D' }}
+              className="history-stat-card"
             >
               <span className="text-base">{icon}</span>
               <span className="text-white font-bold text-lg leading-none">{val}</span>
@@ -162,12 +156,7 @@ export default function RideHistory() {
             <button
               key={f.id}
               onClick={() => setFilter(f.id)}
-              className="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200"
-              style={{
-                background: filter === f.id ? '#FFD700' : '#222',
-                color: filter === f.id ? '#1A1A1A' : '#666',
-                border: `1.5px solid ${filter === f.id ? '#FFD700' : '#2D2D2D'}`,
-              }}
+              className={`history-filter-btn${filter === f.id ? ' is-active' : ''}`}
             >
               {f.label}
             </button>
@@ -176,9 +165,9 @@ export default function RideHistory() {
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto px-4 py-3">
+      <div className="history-list">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-3">
+          <div className="history-empty">
             <span className="text-5xl">🛵</span>
             <p className="text-[#555] text-sm">No rides here</p>
           </div>

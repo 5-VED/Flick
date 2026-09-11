@@ -50,7 +50,7 @@ function DesktopRightPanel({ screen }) {
 
   return (
     <div className="flex-1 relative h-full overflow-hidden">
-      <MapView />
+      {/* <MapView /> */}
       <div
         className="absolute inset-0 flex flex-col items-center justify-center gap-8"
         style={{ background: 'rgba(8, 8, 8, 0.83)' }}
@@ -115,7 +115,7 @@ function AppShell() {
     <div className="app-shell lg:flex lg:flex-row">
       {/* Left content panel — full viewport on mobile, 440 px sidebar on desktop */}
       <div
-        className="relative bg-[#1A1A1A] overflow-hidden w-full lg:w-[440px] lg:flex-shrink-0 lg:border-r lg:border-[#252525]"
+        className="relative bg-[#1A1A1A] overflow-hidden w-full lg:flex-shrink-0 lg:border-r"
         style={{ height: '100dvh' }}
       >
         {screen === 'splash'   && <Splash key="splash" />}
@@ -133,9 +133,9 @@ function AppShell() {
       </div>
 
       {/* Right panel — desktop only */}
-      <div className="hidden lg:flex lg:flex-1" style={{ height: '100dvh' }}>
+      {/* <div className="hidden lg:flex lg:flex-1" style={{ height: '100dvh' }}>
         <DesktopRightPanel screen={screen} />
-      </div>
+      </div> */}
     </div>
   );
 }

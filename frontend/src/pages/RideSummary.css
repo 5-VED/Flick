@@ -1,0 +1,92 @@
+/* ================= RideSummary page ================= */
+.summary-header {
+  flex-shrink: 0;
+  padding: 3rem 1rem 1rem;
+  background: linear-gradient(180deg, #1a1a1a 60%, transparent);
+}
+
+.summary-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 1rem 7rem;
+}
+.summary-scroll > * + * { margin-top: 0.75rem; }
+
+.summary-route-dots { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
+.summary-dot-start { width: 0.75rem; height: 0.75rem; border-radius: 9999px; background: #ffd700; }
+.summary-route-line { width: 2px; height: 2rem; background: #333; }
+.summary-dot-end { width: 0.75rem; height: 0.75rem; border-radius: 9999px; background: #4ade80; }
+
+.summary-completed-pill {
+  display: flex; align-items: center; gap: 0.375rem;
+  padding: 0.375rem 0.75rem; border-radius: 9999px;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.summary-tip-btn {
+  flex: 1; padding: 0.625rem 0;
+  border-radius: 0.75rem;
+  font-size: 0.875rem; font-weight: 700;
+  background: #2a2a2a; color: #888;
+  border: 1.5px solid #333;
+  transition: all 0.2s ease;
+}
+.summary-tip-btn:active { transform: scale(0.95); }
+.summary-tip-btn.is-selected {
+  background: #ffd700; color: #1a1a1a; border-color: #ffd700;
+}
+
+.summary-star-btn { transition: transform 0.1s ease; }
+.summary-star-btn:active { transform: scale(0.9); }
+
+.summary-pay-option {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem; border-radius: 0.75rem;
+  border: 1.5px solid #2d2d2d; background: transparent;
+  transition: all 0.2s ease;
+  text-align: left; width: 100%;
+}
+.summary-pay-option:active { transform: scale(0.98); }
+.summary-pay-option.is-selected {
+  background: rgba(255, 215, 0, 0.06);
+  border-color: #ffd700;
+}
+.summary-pay-radio {
+  width: 1.25rem; height: 1.25rem; border-radius: 9999px;
+  border: 2px solid #444;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.summary-pay-option.is-selected .summary-pay-radio { border-color: #ffd700; }
+.summary-pay-radio-dot {
+  width: 0.625rem; height: 0.625rem;
+  border-radius: 9999px; background: #ffd700;
+}
+
+.summary-pay-bar {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 1rem 1rem 2rem;
+  background: linear-gradient(to top, #1a1a1a 70%, transparent);
+}
+
+.summary-success-icon {
+  width: 6rem; height: 6rem; border-radius: 9999px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(34, 197, 94, 0.12);
+  border: 2px solid #22c55e;
+  box-shadow: 0 0 40px rgba(34, 197, 94, 0.25);
+}
+.summary-success-pill {
+  padding: 0.5rem 1.25rem; border-radius: 9999px;
+  color: #1a1a1a; font-weight: 700; font-size: 1.125rem;
+  background: #ffd700;
+}
+
+.summary-captain-avatar {
+  width: 2.75rem; height: 2.75rem; border-radius: 0.75rem;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; font-weight: 700;
+  background: linear-gradient(135deg, #ffd700, #e6a800);
+  color: #1a1a1a;
+}
