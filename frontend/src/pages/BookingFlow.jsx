@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import MapView from '../components/MapView';
+import './BookingFlow.css';
 
 const RIDE_TYPES = [
   {
@@ -70,16 +71,16 @@ export default function BookingFlow() {
   return (
     <div className="screen">
       {/* Map (desktop: right panel owns map) */}
-      <div className="absolute inset-0 lg:hidden" style={{ bottom: step === 'confirm' ? '320px' : '380px' }}>
+      <div className="booking-map-layer booking-map-layer--mobile" style={{ bottom: step === 'confirm' ? '320px' : '380px' }}>
         <MapView showRoute={routeReady} showDestination />
       </div>
 
       {/* Top bar */}
-      <div className="absolute top-0 left-0 right-0 z-10 px-4 pt-12 lg:pt-6">
+      <div className="booking-topbar">
         <div className="flex items-center gap-3">
           <button
             onClick={() => (step === 'confirm' ? setStep('select') : navigate('home'))}
-            className="w-10 h-10 rounded-full bg-[#1A1A1A]/80 backdrop-blur-md border border-[#333] flex items-center justify-center active:scale-90 transition-transform"
+            className="booking-back-btn"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
               <path
@@ -93,11 +94,11 @@ export default function BookingFlow() {
           </button>
 
           {/* Route summary pill */}
-          <div className="flex-1 flex items-center gap-2 bg-[#1A1A1A]/80 backdrop-blur-md border border-[#333] rounded-2xl px-3 py-2">
-            <div className="flex flex-col items-center gap-0.5">
-              <div className="w-2 h-2 rounded-full bg-[#FFD700]" />
-              <div className="w-0.5 h-3 bg-[#444]" />
-              <div className="w-2 h-2 rounded-full bg-green-400" />
+          <div className="booking-route-pill">
+            <div className="booking-route-dots">
+              <div className="booking-dot-start" />
+              <div className="booking-route-connector" />
+              <div className="booking-dot-end" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-white text-xs font-semibold truncate">{pickup}</p>
@@ -112,7 +113,7 @@ export default function BookingFlow() {
       </div>
 
       {/* Bottom sheet */}
-      <div className="absolute bottom-0 left-0 right-0 z-10">
+      <div className="booking-sheet">
         <div className="bottom-sheet px-4 pt-4 pb-8">
           <div className="w-10 h-1 bg-[#333] rounded-full mx-auto mb-4" />
 
@@ -131,19 +132,11 @@ export default function BookingFlow() {
                   <button
                     key={ride.id}
                     onClick={() => handleSelectRide(ride)}
-                    className="flex items-center gap-3 p-3.5 rounded-2xl border-2 transition-all duration-200 active:scale-98 text-left"
-                    style={{
-                      borderColor: selectedRide?.id === ride.id ? '#FFD700' : '#2D2D2D',
-                      background:
-                        selectedRide?.id === ride.id
-                          ? 'rgba(255,215,0,0.06)'
-                          : '#222',
-                    }}
+                    className={`booking-ride-option${selectedRide?.id === ride.id ? ' is-selected' : ''}`}
                   >
                     {/* Icon */}
                     <div
-                      className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
-                      style={{ background: '#2A2A2A' }}
+                      className="booking-ride-icon"
                     >
                       {ride.emoji}
                     </div>
@@ -154,7 +147,7 @@ export default function BookingFlow() {
                         <span className="text-white font-bold text-base">{ride.label}</span>
                         {ride.badge && (
                           <span
-                            className="text-[10px] font-bold px-1.5 py-0.5 rounded-md"
+                            className="booking-ride-badge"
                             style={{
                               background: `${ride.badgeColor}20`,
                               color: ride.badgeColor,
@@ -183,7 +176,7 @@ export default function BookingFlow() {
                 ))}
               </div>
 
-              <p className="text-[#555] text-xs text-center">Tap any ride to confirm booking</p>
+              <p className="booking-hint">Tap any ride to confirm booking</p>
             </>
           )}
 
@@ -206,7 +199,7 @@ export default function BookingFlow() {
               </div>
 
               {/* Fare breakdown */}
-              <div className="bg-[#2A2A2A] rounded-2xl p-4 mb-4">
+              <div className="booking-fare-box">
                 <p className="section-title mb-3">Fare Estimate</p>
                 <div className="flex flex-col gap-2">
                   {[
@@ -231,7 +224,7 @@ export default function BookingFlow() {
               </div>
 
               {/* Payment method */}
-              <div className="flex items-center gap-2 bg-[#2A2A2A] rounded-2xl p-3.5 mb-4">
+              <div className="booking-pay-row">
                 <span className="text-lg">💵</span>
                 <span className="text-white text-sm font-medium">Cash</span>
                 <svg className="ml-auto" width="16" height="16" viewBox="0 0 24 24" fill="none">

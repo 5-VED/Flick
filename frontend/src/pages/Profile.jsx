@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import './Profile.css';
 
 const MenuItem = ({ icon, label, value, danger, onClick, rightEl }) => (
   <button
     onClick={onClick}
-    className="flex items-center gap-3 w-full py-3.5 active:opacity-60 transition-opacity"
+    className="profile-menu-item"
   >
     <div
-      className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-lg"
-      style={{
-        background: danger ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.05)',
-        border: `1px solid ${danger ? 'rgba(239,68,68,0.2)' : '#2D2D2D'}`,
-      }}
+      className={`profile-menu-icon${danger ? ' profile-menu-icon--danger' : ''}`}
     >
       {icon}
     </div>
@@ -35,7 +32,7 @@ const MenuItem = ({ icon, label, value, danger, onClick, rightEl }) => (
   </button>
 );
 
-const Divider = () => <div className="border-t border-[#222] my-1" />;
+const Divider = () => <div className="profile-menu-divider" />;
 
 export default function Profile() {
   const { user, walletBalance, navigate, logout, rideHistory } = useApp();
@@ -58,18 +55,13 @@ export default function Profile() {
   const initials = name.split(' ').map((n) => n[0]).join('');
 
   return (
-    <div className="screen flex flex-col pb-20 overflow-y-auto">
+    <div className="screen profile-scroll">
       {/* Header */}
       <div
-        className="flex-shrink-0 px-4 pt-12 pb-6"
-        style={{
-          background:
-            'linear-gradient(180deg, rgba(255,215,0,0.06) 0%, transparent 100%)',
-        }}
+        className="profile-header"
       >
         <h1
-          className="text-3xl text-white tracking-wide mb-5"
-          style={{ fontFamily: 'Bebas Neue' }}
+          className="profile-title"
         >
           Profile
         </h1>
@@ -78,20 +70,12 @@ export default function Profile() {
         <div className="flex items-center gap-4">
           <div className="relative">
             <div
-              className="w-18 h-18 rounded-2xl flex items-center justify-center text-2xl font-bold"
-              style={{
-                width: '72px',
-                height: '72px',
-                background: 'linear-gradient(135deg, #FFD700 0%, #E6A800 100%)',
-                color: '#1A1A1A',
-                boxShadow: '0 0 24px rgba(255,215,0,0.3)',
-              }}
+              className="profile-avatar"
             >
               {initials}
             </div>
             <div
-              className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs"
-              style={{ background: '#22C55E', border: '2px solid #1A1A1A' }}
+              className="profile-avatar-badge"
             >
               ✓
             </div>
@@ -118,7 +102,7 @@ export default function Profile() {
         </div>
       </div>
 
-      <div className="px-4 space-y-3 pb-4">
+      <div className="profile-body">
         {/* Stats */}
         <div className="grid grid-cols-3 gap-2">
           {[
@@ -128,13 +112,11 @@ export default function Profile() {
           ].map(({ label, val, icon }) => (
             <div
               key={label}
-              className="flex flex-col items-center gap-1.5 py-4 rounded-2xl"
-              style={{ background: '#222', border: '1px solid #2D2D2D' }}
+              className="profile-stat-card"
             >
               <span className="text-xl">{icon}</span>
               <span
-                className="font-bold text-lg leading-none"
-                style={{ fontFamily: 'Bebas Neue', color: '#FFD700', letterSpacing: '0.04em' }}
+                className="profile-stat-val"
               >
                 {val}
               </span>
@@ -145,11 +127,7 @@ export default function Profile() {
 
         {/* Wallet card */}
         <div
-          className="rounded-2xl p-4"
-          style={{
-            background: 'linear-gradient(135deg, #222 0%, #1E1E1E 100%)',
-            border: '1.5px solid #2D2D2D',
-          }}
+          className="profile-wallet-card"
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
@@ -159,8 +137,7 @@ export default function Profile() {
             <span className="text-[#FFD700] font-bold text-xl">₹{walletBalance}</span>
           </div>
           <button
-            className="w-full py-2.5 rounded-xl text-sm font-bold text-[#1A1A1A]"
-            style={{ background: '#FFD700', boxShadow: '0 2px 12px rgba(255,215,0,0.3)' }}
+            className="profile-wallet-add"
           >
             + Add Money
           </button>
@@ -168,11 +145,7 @@ export default function Profile() {
 
         {/* Referral card */}
         <div
-          className="rounded-2xl p-4"
-          style={{
-            background: 'linear-gradient(135deg, rgba(255,215,0,0.08) 0%, rgba(255,215,0,0.02) 100%)',
-            border: '1.5px solid rgba(255,215,0,0.2)',
-          }}
+          className="profile-referral-card"
         >
           <div className="flex items-center gap-2 mb-1">
             <span className="text-lg">🎁</span>
@@ -183,21 +156,13 @@ export default function Profile() {
           </p>
           <div className="flex items-center gap-2">
             <div
-              className="flex-1 py-2.5 px-3 rounded-xl text-center font-bold tracking-widest"
-              style={{
-                background: '#1A1A1A',
-                color: '#FFD700',
-                border: '1.5px solid rgba(255,215,0,0.3)',
-                fontFamily: 'DM Sans',
-                fontSize: '14px',
-              }}
+              className="profile-referral-code"
             >
               {REFERRAL_CODE}
             </div>
             <button
               onClick={handleCopyReferral}
-              className="py-2.5 px-4 rounded-xl font-bold text-sm transition-all duration-200 active:scale-95"
-              style={{ background: '#FFD700', color: '#1A1A1A' }}
+              className="profile-referral-copy"
             >
               {copied ? '✓' : 'Copy'}
             </button>
@@ -206,8 +171,7 @@ export default function Profile() {
 
         {/* Menu sections */}
         <div
-          className="rounded-2xl px-4"
-          style={{ background: '#222', border: '1px solid #2D2D2D' }}
+          className="profile-menu-section"
         >
           <MenuItem icon="📋" label="Ride History" value="View all your past trips" onClick={() => navigate('history')} />
           <Divider />
@@ -219,8 +183,7 @@ export default function Profile() {
         </div>
 
         <div
-          className="rounded-2xl px-4"
-          style={{ background: '#222', border: '1px solid #2D2D2D' }}
+          className="profile-menu-section"
         >
           <MenuItem icon="🛡️" label="Safety Center" />
           <Divider />
@@ -239,8 +202,7 @@ export default function Profile() {
         </div>
 
         <div
-          className="rounded-2xl px-4"
-          style={{ background: '#222', border: '1px solid #2D2D2D' }}
+          className="profile-menu-section"
         >
           <MenuItem
             icon="🚪"

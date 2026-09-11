@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import './RideSummary.css';
 
 const PAYMENT_OPTIONS = [
   { id: 'cash', label: 'Cash', icon: '💵', sub: 'Pay to captain' },
@@ -39,12 +40,7 @@ export default function RideSummary() {
     return (
       <div className="screen flex flex-col items-center justify-center px-6 gap-6">
         <div
-          className="w-24 h-24 rounded-full flex items-center justify-center animate-float"
-          style={{
-            background: 'rgba(34,197,94,0.12)',
-            border: '2px solid #22C55E',
-            boxShadow: '0 0 40px rgba(34,197,94,0.25)',
-          }}
+          className="summary-success-icon animate-float"
         >
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
             <path
@@ -61,8 +57,7 @@ export default function RideSummary() {
           <p className="text-[#888] text-sm mt-1">Thanks for riding with Flick 🏍️</p>
         </div>
         <div
-          className="px-5 py-2 rounded-full text-[#1A1A1A] font-bold text-lg"
-          style={{ background: '#FFD700' }}
+          className="summary-success-pill"
         >
           ₹{data.fare + tipAmount} paid
         </div>
@@ -74,16 +69,12 @@ export default function RideSummary() {
     <div className="screen flex flex-col overflow-hidden">
       {/* Header */}
       <div
-        className="flex-shrink-0 px-4 pt-12 pb-4"
-        style={{
-          background: 'linear-gradient(180deg, #1A1A1A 60%, transparent)',
-        }}
+        className="summary-header"
       >
         <div className="flex items-center justify-between mb-1">
           <h2 className="text-white text-xl font-bold">Ride Complete</h2>
           <div
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-            style={{ background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)' }}
+            className="summary-completed-pill"
           >
             <div className="w-2 h-2 bg-green-400 rounded-full" />
             <span className="text-green-400 text-xs font-bold">Completed</span>
@@ -91,14 +82,14 @@ export default function RideSummary() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 pb-28 space-y-3">
+      <div className="summary-scroll space-y-3">
         {/* Route card */}
         <div className="card">
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex flex-col items-center gap-1">
-              <div className="w-3 h-3 rounded-full bg-[#FFD700]" />
-              <div className="w-0.5 h-8 bg-[#333]" />
-              <div className="w-3 h-3 rounded-full bg-green-400" />
+            <div className="summary-route-dots">
+              <div className="summary-dot-start" />
+              <div className="summary-route-line" />
+              <div className="summary-dot-end" />
             </div>
             <div className="flex-1">
               <div className="mb-2.5">
@@ -169,12 +160,7 @@ export default function RideSummary() {
               <button
                 key={t}
                 onClick={() => setTipAmount(t)}
-                className="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 active:scale-95"
-                style={{
-                  background: tipAmount === t ? '#FFD700' : '#2A2A2A',
-                  color: tipAmount === t ? '#1A1A1A' : '#888',
-                  border: `1.5px solid ${tipAmount === t ? '#FFD700' : '#333'}`,
-                }}
+                className={`summary-tip-btn${tipAmount === t ? ' is-selected' : ''}`}
               >
                 {t === 0 ? 'No tip' : `₹${t}`}
               </button>
@@ -187,8 +173,7 @@ export default function RideSummary() {
           <p className="section-title mb-3">Rate your captain</p>
           <div className="flex items-center gap-3 mb-4">
             <div
-              className="w-11 h-11 rounded-xl flex items-center justify-center text-base font-bold"
-              style={{ background: 'linear-gradient(135deg, #FFD700, #E6A800)', color: '#1A1A1A' }}
+              className="summary-captain-avatar"
             >
               {data.captain?.initials || 'RK'}
             </div>
@@ -204,7 +189,7 @@ export default function RideSummary() {
                 onMouseEnter={() => setHoveredStar(s)}
                 onMouseLeave={() => setHoveredStar(0)}
                 onClick={() => setRating(s)}
-                className="transition-transform duration-100 active:scale-90"
+                className="summary-star-btn"
               >
                 <svg width="36" height="36" viewBox="0 0 24 24">
                   <path
@@ -236,11 +221,7 @@ export default function RideSummary() {
               <button
                 key={opt.id}
                 onClick={() => setSelectedPayment(opt.id)}
-                className="flex items-center gap-3 p-3 rounded-xl transition-all duration-200 active:scale-98 text-left"
-                style={{
-                  background: selectedPayment === opt.id ? 'rgba(255,215,0,0.06)' : 'transparent',
-                  border: `1.5px solid ${selectedPayment === opt.id ? '#FFD700' : '#2D2D2D'}`,
-                }}
+                className={`summary-pay-option${selectedPayment === opt.id ? ' is-selected' : ''}`}
               >
                 <span className="text-xl">{opt.icon}</span>
                 <div className="flex-1">
@@ -248,11 +229,10 @@ export default function RideSummary() {
                   <p className="text-[#666] text-xs">{opt.sub}</p>
                 </div>
                 <div
-                  className="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0"
-                  style={{ borderColor: selectedPayment === opt.id ? '#FFD700' : '#444' }}
+                  className="summary-pay-radio"
                 >
                   {selectedPayment === opt.id && (
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#FFD700]" />
+                    <div className="summary-pay-radio-dot" />
                   )}
                 </div>
               </button>
@@ -263,8 +243,7 @@ export default function RideSummary() {
 
       {/* Pay button */}
       <div
-        className="absolute bottom-0 left-0 right-0 px-4 pb-8 pt-4"
-        style={{ background: 'linear-gradient(to top, #1A1A1A 70%, transparent)' }}
+        className="summary-pay-bar"
       >
         <button className="btn-primary" onClick={handlePay}>
           Pay ₹{data.fare + tipAmount}

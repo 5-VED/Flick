@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
+import './Login.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -27,40 +28,40 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">Login to Chat</h2>
-        <p className="text-center text-sm text-gray-600 mb-6">
+    <div className="login-page">
+      <div className="login-card">
+        <h2 className="login-title">Login to Chat</h2>
+        <p className="login-subtitle">
           Or{' '}
-          <Link to="/signup" className="font-medium text-primary hover:text-primary-dark">
+          <Link to="/signup" className="login-link">
             create a new account
           </Link>
         </p>
-        {error && <div className="bg-red-100 text-red-600 p-3 rounded mb-4">{error}</div>}
-        <form onSubmit={handleLogin} className="space-y-4">
+        {error && <div className="login-error">{error}</div>}
+        <form onSubmit={handleLogin} className="login-form">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label className="login-label">Email</label>
             <input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="login-input"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <label className="login-label">Password</label>
             <input
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="login-input"
               required
             />
           </div>
           <button
             type="submit"
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+            className="login-submit"
           >
             Sign In
           </button>

@@ -1,0 +1,89 @@
+/* ================= Sidebar =================
+   Scoped with .sidebar- prefix. */
+
+.sidebar-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+}
+.sidebar-header {
+  padding: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sidebar-new-btn {
+  padding: 0.5rem;
+  border-radius: 9999px;
+  color: #3b82f6;
+  transition: background-color 0.15s ease;
+}
+.sidebar-new-btn:hover { background: #f3f4f6; }
+.sidebar-menu {
+  position: absolute;
+  right: 0; top: 100%;
+  margin-top: 0.25rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  width: 11rem;
+  z-index: 30;
+}
+.sidebar-search-wrap { padding: 1rem 1rem 0.5rem; }
+.sidebar-search-input {
+  width: 100%;
+  background: #f3f4f6;
+  border-radius: 9999px;
+  padding: 0.5rem 1rem 0.5rem 2.5rem;
+  font-size: 0.875rem;
+}
+.sidebar-search-input::placeholder { color: #6b7280; }
+.sidebar-search-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+.sidebar-conv-row {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.sidebar-conv-row:hover { background: #f9fafb; }
+.sidebar-conv-row.is-selected { background: #eff6ff; }
+.sidebar-conv-row.is-selected:hover { background: #eff6ff; }
+.sidebar-avatar {
+  width: 3rem; height: 3rem;
+  border-radius: 9999px;
+  background: #3b82f6;
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+.sidebar-avatar--sm {
+  width: 2.5rem; height: 2.5rem;
+  font-size: 0.875rem;
+}
+.sidebar-unread {
+  margin-left: 0.5rem;
+  flex-shrink: 0;
+  background: #3b82f6;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 9999px;
+  width: 1.25rem; height: 1.25rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.sidebar-online-dot {
+  margin-left: auto;
+  width: 0.5rem; height: 0.5rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}

@@ -1,0 +1,75 @@
+/* ================= BookingFlow page ================= */
+.booking-map-layer { position: absolute; inset: 0; }
+@media (min-width: 1024px) {
+  .booking-map-layer--mobile { display: none; }
+}
+
+.booking-topbar {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 10;
+  padding: 3rem 1rem 0;
+}
+@media (min-width: 1024px) {
+  .booking-topbar { padding-top: 1.5rem; }
+}
+
+.booking-back-btn {
+  width: 2.5rem; height: 2.5rem; border-radius: 9999px;
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid #333;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.15s ease;
+}
+.booking-back-btn:active { transform: scale(0.9); }
+
+.booking-route-pill {
+  flex: 1; display: flex; align-items: center; gap: 0.5rem;
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid #333;
+  border-radius: 1rem;
+  padding: 0.5rem 0.75rem;
+  min-width: 0;
+}
+.booking-route-dots { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.booking-dot-start { width: 0.5rem; height: 0.5rem; border-radius: 9999px; background: #ffd700; }
+.booking-route-connector { width: 2px; height: 0.75rem; background: #444; }
+.booking-dot-end { width: 0.5rem; height: 0.5rem; border-radius: 9999px; background: #4ade80; }
+
+.booking-ride-option {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.875rem; border-radius: 1rem;
+  border: 2px solid #2d2d2d; background: #222;
+  transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.1s ease;
+  text-align: left; width: 100%;
+}
+.booking-ride-option:active { transform: scale(0.98); }
+.booking-ride-option.is-selected {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.06);
+}
+.booking-ride-icon {
+  width: 3rem; height: 3rem; border-radius: 1rem;
+  background: #2a2a2a;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; flex-shrink: 0;
+}
+.booking-ride-badge {
+  font-size: 10px; font-weight: 700;
+  padding: 0.125rem 0.375rem; border-radius: 0.375rem;
+}
+
+.booking-fare-box {
+  background: #2a2a2a; border-radius: 1rem; padding: 1rem; margin-bottom: 1rem;
+}
+
+.booking-pay-row {
+  display: flex; align-items: center; gap: 0.5rem;
+  background: #2a2a2a; border-radius: 1rem;
+  padding: 0.875rem; margin-bottom: 1rem;
+}
+
+.booking-sheet {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 10;
+}
+.booking-hint { color: #555; font-size: 0.75rem; text-align: center; }

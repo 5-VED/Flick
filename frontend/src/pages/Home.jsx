@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import MapView from '../components/MapView';
+import './Home.css';
 
 const QuickDestination = ({ icon, name, subtitle, onSelect }) => (
   <button
     onClick={onSelect}
-    className="flex items-center gap-3 p-3 rounded-2xl bg-[#2A2A2A] active:bg-[#333] transition-colors text-left w-full"
+    className="home-quick-btn"
   >
-    <div className="w-10 h-10 rounded-xl bg-[#333] flex items-center justify-center text-lg flex-shrink-0">
+    <div className="home-quick-icon">
       {icon}
     </div>
     <div className="min-w-0">
@@ -52,49 +53,49 @@ export default function Home() {
   return (
     <div className="screen">
       {/* Map - full background (desktop: right panel owns map) */}
-      <div className="absolute inset-0 lg:hidden">
+      <div className="home-map-layer lg:hidden">
         <MapView showBikes />
       </div>
 
       {/* Top bar */}
-      <div className="absolute top-0 left-0 right-0 z-10 px-4 pt-12 lg:pt-6 pb-4">
+      <div className="home-topbar">
         <div className="flex items-center justify-between">
           <div
-            className="flex items-center gap-2 bg-black/70 backdrop-blur-md border border-[#333] rounded-2xl px-3.5 py-2.5"
+            className="home-user-chip"
           >
-            <div className="w-7 h-7 rounded-full bg-[#FFD700] flex items-center justify-center">
-              <span className="text-[#1A1A1A] text-xs font-bold">
+            <div className="home-avatar">
+              <span>
                 {firstName[0]}
               </span>
             </div>
             <div>
-              <p className="text-[#888] text-[10px] leading-tight">{greeting}</p>
-              <p className="text-white text-sm font-semibold leading-tight">{firstName} 👋</p>
+              <p className="home-greet">{greeting}</p>
+              <p className="home-name">{firstName} 👋</p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             {/* Wallet chip */}
-            <div className="flex items-center gap-1.5 bg-black/70 backdrop-blur-md border border-[#FFD700]/30 rounded-2xl px-3 py-2">
+            <div className="home-wallet-chip">
               <span className="text-[#FFD700] text-xs">💰</span>
               <span className="text-[#FFD700] text-sm font-bold">₹{walletBalance}</span>
             </div>
             {/* Notification */}
-            <button className="w-10 h-10 rounded-2xl bg-black/70 backdrop-blur-md border border-[#333] flex items-center justify-center relative">
+            <button className="home-notif-btn">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.37 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.64 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z"
                   fill="#888"
                 />
               </svg>
-              <span className="absolute top-2 right-2 w-2 h-2 bg-[#FFD700] rounded-full" />
+              <span className="home-notif-dot" />
             </button>
           </div>
         </div>
       </div>
 
       {/* Bottom sheet */}
-      <div className="absolute bottom-16 left-0 right-0 z-10">
+      <div className="home-sheet-wrap">
         <div className="bottom-sheet px-4 pt-4 pb-2 mx-0">
           {/* Handle */}
           <div className="w-10 h-1 bg-[#3A3A3A] rounded-full mx-auto mb-4" />
@@ -102,9 +103,9 @@ export default function Home() {
           {/* Pickup location */}
           <div className="flex items-center gap-3 mb-3">
             <div className="flex flex-col items-center gap-1">
-              <div className="w-3 h-3 rounded-full border-2 border-[#FFD700] bg-[#FFD700]/20" />
-              <div className="w-0.5 h-4 bg-[#333]" />
-              <div className="w-3 h-3 rounded-full bg-[#888]" />
+              <div className="home-pickup-dot" />
+              <div className="home-route-line" />
+              <div className="home-drop-dot" />
             </div>
             <div className="flex-1">
               <p className="text-[#888] text-[10px] font-semibold uppercase tracking-wide mb-0.5">
@@ -137,8 +138,7 @@ export default function Home() {
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
-              className="input-field pl-10 text-sm"
-              style={{ background: '#2A2A2A' }}
+              className="input-field pl-10 text-sm home-search-input"
             />
           </div>
 
@@ -167,7 +167,7 @@ export default function Home() {
           </div>
 
           {/* Nearby bikes count */}
-          <div className="flex items-center justify-between py-3 border-t border-[#2A2A2A]">
+          <div className="home-avail-bar">
             <div className="flex items-center gap-2">
               <span className="text-lg">🏍️</span>
               <span className="text-[#888] text-xs font-medium">

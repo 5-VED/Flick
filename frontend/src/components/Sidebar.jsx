@@ -5,6 +5,7 @@ import { Search, Plus, X, ArrowLeft, Users, MessageSquare } from 'lucide-react';
 import clsx from 'clsx';
 import { format } from 'date-fns';
 import GroupCreateModal from './GroupCreateModal';
+import './Sidebar.css';
 
 const Sidebar = ({ selectedConversation, onSelectConversation }) => {
   const [conversations, setConversations] = useState([]);
@@ -105,7 +106,7 @@ const Sidebar = ({ selectedConversation, onSelectConversation }) => {
 
   if (showNewChat) {
     return (
-      <div className="flex flex-col h-full bg-white">
+      <div className="sidebar-root">
         <div className="p-4 border-b border-gray-100 flex items-center space-x-3">
           <button
             onClick={() => { setShowNewChat(false); setUserSearch(''); setUserResults([]); }}
@@ -115,14 +116,14 @@ const Sidebar = ({ selectedConversation, onSelectConversation }) => {
           </button>
           <h1 className="text-lg font-bold text-gray-800">New Chat</h1>
         </div>
-        <div className="p-4 pt-2">
+        <div className="sidebar-search-wrap">
           <div className="relative">
             <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
             <input
               autoFocus
               type="text"
               placeholder="Search people..."
-              className="w-full bg-gray-100 placeholder-gray-500 rounded-full py-2 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary"
+              className="sidebar-search-input"
               value={userSearch}
               onChange={e => setUserSearch(e.target.value)}
             />
@@ -140,9 +141,9 @@ const Sidebar = ({ selectedConversation, onSelectConversation }) => {
               <div
                 key={u._id}
                 onClick={() => handleSelectUser(u)}
-                className="flex items-center p-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                className="sidebar-conv-row"
               >
-                <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold mr-3 flex-shrink-0 text-sm">
+                <div className="sidebar-avatar sidebar-avatar--sm">
                   {u.first_name?.charAt(0).toUpperCase()}
                 </div>
                 <div>
@@ -152,7 +153,7 @@ const Sidebar = ({ selectedConversation, onSelectConversation }) => {
                   <p className="text-xs text-gray-500">{u.email}</p>
                 </div>
                 <div className={clsx(
-                  'ml-auto w-2 h-2 rounded-full',
+                  'sidebar-online-dot',
                   u.status === 'online' ? 'bg-green-500' : 'bg-gray-300'
                 )} />
               </div>
@@ -165,20 +166,20 @@ const Sidebar = ({ selectedConversation, onSelectConversation }) => {
 
   return (
   <>
-    <div className="flex flex-col h-full bg-white">
+    <div className="sidebar-root">
       {/* Header */}
-      <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="sidebar-header">
         <h1 className="text-xl font-bold text-gray-800">Chats</h1>
         <div className="relative" ref={menuRef}>
           <button
             onClick={() => setShowNewMenu(v => !v)}
-            className="p-2 rounded-full hover:bg-gray-100 text-primary transition-colors"
+            className="sidebar-new-btn"
             title="New chat"
           >
             <Plus size={20} />
           </button>
           {showNewMenu && (
-            <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden w-44 z-30">
+            <div className="sidebar-menu">
               <button
                 onClick={() => { setShowNewMenu(false); setShowNewChat(true); }}
                 className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
@@ -199,13 +200,13 @@ const Sidebar = ({ selectedConversation, onSelectConversation }) => {
       </div>
 
       {/* Search */}
-      <div className="p-4 pt-2">
+      <div className="sidebar-search-wrap">
         <div className="relative">
           <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
           <input
             type="text"
             placeholder="Search"
-            className="w-full bg-gray-100 placeholder-gray-500 rounded-full py-2 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary"
+            className="sidebar-search-input"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
@@ -244,11 +245,11 @@ const Sidebar = ({ selectedConversation, onSelectConversation }) => {
                 key={conv._id}
                 onClick={() => onSelectConversation(conv)}
                 className={clsx(
-                  'flex items-center p-3 cursor-pointer hover:bg-gray-50 transition-colors',
-                  isSelected && 'bg-blue-50 hover:bg-blue-50'
+                  'sidebar-conv-row',
+                  isSelected && 'is-selected'
                 )}
               >
-                <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold mr-3 flex-shrink-0">
+                <div className="sidebar-avatar">
                   {displayName.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -259,7 +260,7 @@ const Sidebar = ({ selectedConversation, onSelectConversation }) => {
                   <div className="flex items-center justify-between">
                     <p className="text-xs text-gray-500 truncate">{lastMsg}</p>
                     {unread > 0 && (
-                      <span className="ml-2 flex-shrink-0 bg-primary text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      <span className="sidebar-unread">
                         {unread > 9 ? '9+' : unread}
                       </span>
                     )}

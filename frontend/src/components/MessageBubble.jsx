@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import clsx from 'clsx';
 import { format } from 'date-fns';
 import { Reply, Trash2, Edit2, Copy, Star, MoreHorizontal, Check, CheckCheck } from 'lucide-react';
+import './MessageBubble.css';
 
 const QUICK_REACTIONS = ['❤️', '😂', '😮', '😢', '😡', '👍'];
 
@@ -58,8 +59,8 @@ const MessageBubble = ({
 
   if (isDeleted) {
     return (
-      <div className={clsx('flex mb-1', isMe ? 'justify-end' : 'justify-start')}>
-        <div className="px-4 py-2 rounded-2xl bg-gray-100 border border-dashed border-gray-300">
+      <div className={clsx('msgbubble-row', isMe ? 'is-me' : 'is-peer')}>
+        <div className="msgbubble-deleted">
           <p className="text-xs text-gray-400 italic">This message was deleted</p>
         </div>
       </div>
@@ -68,25 +69,25 @@ const MessageBubble = ({
 
   return (
     <div
-      className={clsx('flex mb-1 group items-end gap-1', isMe ? 'justify-end' : 'justify-start')}
+      className={clsx('msgbubble-row group', isMe ? 'is-me' : 'is-peer')}
       ref={menuRef}
     >
       {/* Action bar (appears on hover, on the outside of the bubble) */}
       {!isDeleted && (
         <div className={clsx(
-          'flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity mb-0.5',
-          isMe ? 'order-first' : 'order-last'
+          'msgbubble-actions',
+          isMe ? 'is-me' : 'is-peer'
         )}>
           <button
             onClick={() => onReply?.(message)}
-            className="p-1 rounded-full hover:bg-gray-200 text-gray-500"
+            className="msgbubble-tool"
             title="Reply"
           >
             <Reply size={14} />
           </button>
           <button
             onClick={() => setShowReactions(v => !v)}
-            className="p-1 rounded-full hover:bg-gray-200 text-gray-500 relative"
+            className="msgbubble-tool"
             title="React"
           >
             <span className="text-sm leading-none">😊</span>
@@ -94,8 +95,8 @@ const MessageBubble = ({
             {/* Quick reaction picker */}
             {showReactions && (
               <div className={clsx(
-                'absolute bottom-full mb-1 z-20 bg-white border border-gray-200 rounded-full shadow-lg flex p-1 gap-0.5',
-                isMe ? 'right-0' : 'left-0'
+                'msgbubble-react-picker',
+                isMe ? 'is-me' : 'is-peer'
               )}>
                 {QUICK_REACTIONS.map(e => (
                   <button
@@ -111,7 +112,7 @@ const MessageBubble = ({
           </button>
           <button
             onClick={() => setShowMenu(v => !v)}
-            className="p-1 rounded-full hover:bg-gray-200 text-gray-500 relative"
+            className="msgbubble-tool"
             title="More"
           >
             <MoreHorizontal size={14} />
@@ -119,39 +120,39 @@ const MessageBubble = ({
             {/* Context menu */}
             {showMenu && (
               <div className={clsx(
-                'absolute bottom-full mb-1 z-20 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden w-36',
-                isMe ? 'right-0' : 'left-0'
+                'msgbubble-menu',
+                isMe ? 'is-me' : 'is-peer'
               )}>
                 <button
                   onClick={() => { onReply?.(message); setShowMenu(false); }}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  className="msgbubble-menu-item"
                 >
                   <Reply size={14} /> Reply
                 </button>
                 <button
                   onClick={handleCopy}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  className="msgbubble-menu-item"
                 >
                   <Copy size={14} /> Copy
                 </button>
                 {isMe && !isDeleted && (
                   <button
                     onClick={() => { onEdit?.(message); setShowMenu(false); }}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    className="msgbubble-menu-item"
                   >
                     <Edit2 size={14} /> Edit
                   </button>
                 )}
                 <button
                   onClick={() => { onDelete?.(message, false); setShowMenu(false); }}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-red-50"
+                  className="msgbubble-menu-item is-danger"
                 >
                   <Trash2 size={14} /> Delete for me
                 </button>
                 {isMe && (
                   <button
                     onClick={() => { onDelete?.(message, true); setShowMenu(false); }}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 font-medium"
+                    className="msgbubble-menu-item is-danger font-medium"
                   >
                     <Trash2 size={14} /> Delete for all
                   </button>
@@ -163,7 +164,7 @@ const MessageBubble = ({
       )}
 
       {/* Bubble */}
-      <div className="max-w-[70%] flex flex-col">
+      <div className="msgbubble-col">
         {/* Sender name in group chats */}
         {isGroup && showSenderName && !isMe && (
           <p className="text-xs font-semibold text-primary ml-1 mb-0.5">
@@ -173,17 +174,15 @@ const MessageBubble = ({
 
         <div
           className={clsx(
-            'px-4 py-2 rounded-2xl relative shadow-sm',
-            isMe
-              ? 'bg-primary text-white rounded-br-none'
-              : 'bg-white text-gray-800 rounded-bl-none border border-gray-100'
+            'msgbubble-bubble',
+            isMe ? 'is-me' : 'is-peer'
           )}
         >
           {/* Reply preview */}
           {message.replyToMsg && (
             <div className={clsx(
-              'border-l-2 pl-2 mb-2 rounded text-xs opacity-80',
-              isMe ? 'border-blue-200 bg-white/10' : 'border-primary bg-gray-50'
+              'msgbubble-reply',
+              isMe ? 'is-me' : 'is-peer'
             )}>
               <p className={clsx('font-semibold', isMe ? 'text-blue-100' : 'text-primary')}>
                 {message.replyToMsg.senderInfo?.first_name || 'Message'}
@@ -207,7 +206,7 @@ const MessageBubble = ({
                     key={i}
                     src={url}
                     alt={att.file_name}
-                    className="max-w-full rounded-lg max-h-48 object-cover cursor-pointer"
+                    className="msgbubble-attach-img"
                     onClick={() => window.open(url, '_blank')}
                   />
                 ) : (
@@ -217,8 +216,8 @@ const MessageBubble = ({
                     target="_blank"
                     rel="noreferrer"
                     className={clsx(
-                      'flex items-center gap-2 p-2 rounded-lg text-xs',
-                      isMe ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-700'
+                      'msgbubble-attach-file',
+                      isMe ? 'is-me' : 'is-peer'
                     )}
                   >
                     <span className="text-lg">📎</span>
@@ -261,7 +260,7 @@ const MessageBubble = ({
               <button
                 key={emoji}
                 onClick={() => onReact?.(message._id, emoji)}
-                className="flex items-center gap-0.5 bg-white border border-gray-200 rounded-full px-1.5 py-0.5 text-xs shadow-sm hover:bg-gray-50 transition-colors"
+                className="msgbubble-reaction"
               >
                 <span>{emoji}</span>
                 {count > 1 && <span className="text-gray-600">{count}</span>}

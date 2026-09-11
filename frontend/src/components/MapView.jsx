@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import './MapView.css';
 
 const BikeIcon = ({ x, y, size = 18, color = '#FFD700', animate = false }) => (
   <g transform={`translate(${x - size / 2}, ${y - size / 2})`} className={animate ? 'bike-float' : ''}>
@@ -53,11 +54,11 @@ export default function MapView({
   }, [showRoute]);
 
   return (
-    <div className={`relative w-full h-full overflow-hidden map-bg ${className}`}>
+    <div className={`mapview-root map-bg ${className}`}>
       <svg
         viewBox="0 0 400 600"
         preserveAspectRatio="xMidYMid slice"
-        className="absolute inset-0 w-full h-full"
+        className="mapview-svg"
       >
         <defs>
           <filter id="mapGlow" x="-50%" y="-50%" width="200%" height="200%">
@@ -257,8 +258,8 @@ export default function MapView({
       </svg>
 
       {/* Compass */}
-      <div className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/60 backdrop-blur-sm border border-[#333] flex items-center justify-center">
-        <span className="text-[#FFD700] text-sm font-bold" style={{ fontFamily: 'DM Sans' }}>
+      <div className="mapview-compass">
+        <span>
           N
         </span>
       </div>
